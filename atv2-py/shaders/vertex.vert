@@ -1,3 +1,5 @@
+#version 410
+
 attribute vec2 position;
 uniform mat4 mat;
 
