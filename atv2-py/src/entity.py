@@ -1,3 +1,5 @@
+from typing import Optional, Callable
+
 import numpy as np
 import OpenGL.GL as gl
 
@@ -115,3 +117,10 @@ class Entity:
 
     def vertex_count(self):
         return len(self.vertices) // 2
+    
+
+    def key_handler(self) -> Optional[Callable[[any, int, int, int, int], None]]:
+        pass
+
+    def cursor_handler(self) -> Optional[Callable[[any, float, float, float, float], None]]:
+        pass
