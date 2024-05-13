@@ -6,7 +6,6 @@ name = "pypi"
 [packages]
 glfw = "*"
 pyopengl = "*"
-pyopengl-accelerate = "*"
 numpy = "*"
 pyglm = "==1.1.7"
 pillow = "*"

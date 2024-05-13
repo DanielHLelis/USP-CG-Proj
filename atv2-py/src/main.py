@@ -93,9 +93,7 @@ def setup_buffers(program, models: list[Model] = []):
     # Setup vertices
     vertices = np.ndarray([0, 3], dtype=np.float32)
     for model in models:
-        # TODO: Is the offset in bytes or positions?
         model.offset = len(vertices)
-        print(f"Model offset: {model.offset}")
         vertices = np.concatenate([vertices, model.vertices], dtype=np.float32)
 
     # Make this the current buffer and upload the data
