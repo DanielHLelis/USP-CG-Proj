@@ -375,7 +375,7 @@ class Asteroid(Entity):
 
     def __init__(
         self,
-        vertices: np.array = None,
+        vertices: np.ndarray = None,
         acc_x: float = 0.0,
         acc_y: float = 0.0,
         **kwargs,

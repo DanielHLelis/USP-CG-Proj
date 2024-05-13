@@ -5,28 +5,7 @@ import OpenGL.GL as gl
 import glm
 
 from entity import Entity
-
-
-class Camera:
-    position: glm.vec3
-    target: glm.vec3
-    fov: float
-    up: glm.vec3
-
-    def __init__(
-        self,
-        position=glm.vec3(0.0, 0.0, 5.0),
-        target=glm.vec3(0.0, 0.0, 0.0),
-        fov=45.0,
-        up=glm.vec3(0.0, 1.0, 0.0),
-    ):
-        self.position = position
-        self.target = target
-        self.fov = fov
-        self.up = up
-
-    def update(self, dt):
-        pass
+from camera import Camera
 
 
 class Renderer:
@@ -65,17 +44,17 @@ class Renderer:
         )
         return np.array(mat, dtype=np.float32).T
 
-    def view_matrix(self, camera):
+    def _view_matrix(self, camera: Camera) -> np.ndarray:
         view = glm.lookAt(camera.position, camera.target, camera.up)
         return np.array(view).T
 
-    def projection_matrix(self, camera, aspect_ratio=1.0, near=0.1, far=100.0):
-        projection = glm.perspective(glm.radians(camera.fov), aspect_ratio, near, far)
+    def _projection_matrix(self, camera: Camera):
+        projection = glm.perspective(glm.radians(camera.fov), camera.aspect_ratio, camera.near, camera.far)
         return np.array(projection).T
 
     def setup_camera(self, camera):
-        view = self.view_matrix(camera)
-        projection = self.projection_matrix(camera, near=1)
+        view = self._view_matrix(camera)
+        projection = self._projection_matrix(camera)
 
         gl.glUniformMatrix4fv(self.view_loc, 1, gl.GL_TRUE, view)
         gl.glUniformMatrix4fv(self.projection_loc, 1, gl.GL_TRUE, projection)

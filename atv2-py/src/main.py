@@ -1,3 +1,4 @@
+import os
 from typing import Any, Callable, List
 
 import glfw
@@ -6,11 +7,15 @@ import numpy as np
 import OpenGL.GL as gl
 from PIL import Image
 
-from renderer import Camera, Renderer
+from camera import Camera
+from renderer import Renderer
 from entity import Model, Entity
 
-VERTEX_SHADER_FILE = "../shaders/vertex.vert"
-FRAGMENT_SHADER_FILE = "../shaders/fragment.frag"
+def local_relative_path(path: str) -> str:
+    return os.path.join(os.path.dirname(__file__), path)
+
+VERTEX_SHADER_FILE = local_relative_path("../shaders/vertex.vert")
+FRAGMENT_SHADER_FILE = local_relative_path("../shaders/fragment.frag")
 
 # TODO: support mtl :)
 
@@ -19,6 +24,9 @@ def init_window(
     title: str,
     width: int,
     height: int,
+    resizable=False,
+
+
 ):
     glfw.init()
     glfw.window_hint(glfw.CONTEXT_VERSION_MAJOR, 4)
@@ -26,7 +34,7 @@ def init_window(
     glfw.window_hint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE)
     glfw.window_hint(glfw.OPENGL_FORWARD_COMPAT, glfw.TRUE)
     glfw.window_hint(glfw.VISIBLE, glfw.FALSE)
-    glfw.window_hint(glfw.RESIZABLE, glfw.FALSE)
+    glfw.window_hint(glfw.RESIZABLE, glfw.TRUE if resizable else glfw.FALSE)
     glfw.window_hint(glfw.DOUBLEBUFFER, glfw.TRUE)
     glfw.window_hint(glfw.SAMPLES, 4)
 
@@ -35,6 +43,11 @@ def init_window(
 
     glfw.swap_interval(1)
 
+    glfw.set_input_mode(win, glfw.STICKY_KEYS, glfw.TRUE)
+    glfw.set_input_mode(win, glfw.CURSOR, glfw.CURSOR_DISABLED)
+    if glfw.raw_mouse_motion_supported():
+        glfw.set_input_mode(win, glfw.RAW_MOUSE_MOTION, glfw.TRUE)
+    
     return win
 
 
@@ -216,23 +229,23 @@ def main():
     textures: List[str] = []
     entities: List[Entity] = []
 
-    box_texture = "../../examples/caixa/caixa.jpg"
-    box_model = Model.load_obj("../../examples/caixa/caixa.obj", 0)
+    box_texture = local_relative_path("../../examples/caixa/caixa.jpg")
+    box_model = Model.load_obj(local_relative_path("../../examples/caixa/caixa.obj"), 0)
 
     models.append(box_model)
     textures.append(box_texture)
     entities.append(Entity(box_model))
 
-    monster_model = Model.load_obj("../../examples/monstro/monstro.obj", 1)
-    monster_texture = "../../examples/monstro/monstro.jpg"
+    monster_model = Model.load_obj(local_relative_path("../../examples/monstro/monstro.obj"), 1)
+    monster_texture = local_relative_path("../../examples/monstro/monstro.jpg")
 
     models.append(monster_model)
     textures.append(monster_texture)
-    entities.append(Entity(monster_model, position=glm.vec3(2, 0, 0)))
+    entities.append(Entity(monster_model, position=glm.vec3(0, 0, 4)))
 
     # TODO: move this
     camera = Camera()
-    camera.position = glm.vec3(10, 10, 0)
+    camera.position = glm.vec3(10, 1, 0)
 
     polygon_mode = False
 
@@ -248,28 +261,28 @@ def main():
             camera.position.x += step
 
         if key == glfw.KEY_W and action == glfw.PRESS:
-            camera.position.y -= step
-
-        if key == glfw.KEY_S and action == glfw.PRESS:
             camera.position.y += step
 
+        if key == glfw.KEY_S and action == glfw.PRESS:
+            camera.position.y -= step
+
         if key == glfw.KEY_E and action == glfw.PRESS:
-            camera.position.z -= step
+            camera.position.z += step
 
         if key == glfw.KEY_D and action == glfw.PRESS:
-            camera.position.z += step
+            camera.position.z -= step
 
         if key == glfw.KEY_P and action == glfw.PRESS:
             polygon_mode = not polygon_mode
 
     # Configure window
-    win = init_window("Eldrich Horrors Beyond Your Comprehension :D", 800, 800)
+    win = init_window("Eldrich Horrors Beyond Your Comprehension :D", 1280, 720)
     # Load shaders
     program = setup_shaders()
     # Load buffers
     setup_buffers(program, models)
     # Setup events
-    setup_events(win, key_handlers=[closer_handler, camera_handler])
+    setup_events(win, key_handlers=[closer_handler, camera_handler], cursor_handlers=[camera.cursor_handler])
     # Load textures
     setup_textures(program, textures)
 
@@ -306,6 +319,9 @@ def main():
         # Update elements
         for entity in entities:
             entity.update(delta_time)
+
+        # Update the camera
+        camera.update(win, program, delta_time)
 
         renderer.setup_camera(camera)
         # Render elements
