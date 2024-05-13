@@ -9,22 +9,41 @@ import OpenGL.GL as gl
 import glm
 
 
-class Material:
+class Shader:
     program_id: int
+    model_loc: Any
+    view_loc: Any
+    projection_loc: Any
+
+    def __init__(
+        self,
+        program_id: int,
+    ) -> None:
+        self.program_id = program_id
+        self.model_loc = gl.glGetUniformLocation(program_id, "model")
+        self.view_loc = gl.glGetUniformLocation(program_id, "view")
+        self.projection_loc = gl.glGetUniformLocation(program_id, "projection")
+
+    def use(self):
+        gl.glUseProgram(self.program_id)
+
+
+class Material:
+    shader: Shader
     texture_id: int
     texture_path: Optional[str]
 
-    def __init__(self, proogram_id: int, texture_path: Optional[str] = None):
-        self.program_id = proogram_id
+    def __init__(self, shader: Shader, texture_path: Optional[str] = None):
+        self.shader = shader
         self.texture_id = 0
         self.texture_path = texture_path
 
     @staticmethod
-    def from_texture(program_id: int, texture_path: str) -> "Material":
+    def from_texture(shader: Shader, texture_path: str) -> "Material":
         if not os.path.isfile(texture_path):
             raise FileNotFoundError(f"Texture file {texture_path} not found")
 
-        return Material(program_id, texture_path)
+        return Material(shader, texture_path)
 
 
 class Model:

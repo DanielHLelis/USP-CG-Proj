@@ -1,5 +1,5 @@
 import os
-from typing import Any, Callable, List, Dict, Tuple, cast
+from typing import Any, Callable, List, Dict, Tuple, cast, Optional
 
 import glfw
 import glm
@@ -9,15 +9,18 @@ from PIL import Image
 
 from camera import Camera
 from renderer import Renderer
-from entity import Material, Model, Entity
+from entity import Material, Model, Entity, Shader
 
 
 def local_relative_path(path: str) -> str:
     return os.path.join(os.path.dirname(__file__), path)
 
 
-VERTEX_SHADER_FILE = local_relative_path("../shaders/vertex.vert")
-FRAGMENT_SHADER_FILE = local_relative_path("../shaders/fragment.frag")
+VERTEX_SHADER_FILE = local_relative_path("../shaders/main.vert")
+FRAGMENT_SHADER_FILE = local_relative_path("../shaders/main.frag")
+
+OTHER_VERTEX_SHADER_FILE = local_relative_path("../shaders/alt.vert")
+OTHER_FRAGMENT_SHADER_FILE = local_relative_path("../shaders/alt.frag")
 
 # TODO: support mtl :)
 
@@ -51,7 +54,7 @@ def init_window(
     return win
 
 
-def setup_shaders(vertex_shader_source: str, fragment_shader_source: str) -> int:
+def setup_shader(vertex_shader_source: str, fragment_shader_source: str) -> Shader:
     program_id = cast(int, gl.glCreateProgram())
 
     # Build and compile vertex shader
@@ -83,11 +86,8 @@ def setup_shaders(vertex_shader_source: str, fragment_shader_source: str) -> int
     gl.glDeleteShader(vertex_shader)
     gl.glDeleteShader(fragment_shader)
 
-    # Use the default program
-    gl.glUseProgram(program_id)
-
     # Return program
-    return program_id
+    return Shader(program_id)
 
 
 def setup_buffers(models: list[Model] = []) -> Tuple[int, int]:
@@ -130,17 +130,18 @@ def setup_buffers(models: list[Model] = []) -> Tuple[int, int]:
 def bind_buffers(
     program_id: int,
     vertex_buffer: int,
-    texture_map_buffer: int,
+    texture_map_buffer: Optional[int],
 ):
     gl.glBindBuffer(gl.GL_ARRAY_BUFFER, vertex_buffer)
     loc = gl.glGetAttribLocation(program_id, "position")
     gl.glEnableVertexAttribArray(loc)
     gl.glVertexAttribPointer(loc, 3, gl.GL_FLOAT, False, 12, gl.ctypes.c_void_p(0))
 
-    gl.glBindBuffer(gl.GL_ARRAY_BUFFER, texture_map_buffer)
-    loc = gl.glGetAttribLocation(program_id, "texture_coord")
-    gl.glEnableVertexAttribArray(loc)
-    gl.glVertexAttribPointer(loc, 2, gl.GL_FLOAT, False, 8, gl.ctypes.c_void_p(0))
+    if texture_map_buffer is not None:
+        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, texture_map_buffer)
+        loc = gl.glGetAttribLocation(program_id, "texture_coord")
+        gl.glEnableVertexAttribArray(loc)
+        gl.glVertexAttribPointer(loc, 2, gl.GL_FLOAT, False, 8, gl.ctypes.c_void_p(0))
 
 
 def setup_events(
@@ -250,19 +251,25 @@ def main():
     with open(FRAGMENT_SHADER_FILE) as fragment_file:
         fragment_shader_source = fragment_file.read()
 
-    default_program_id = setup_shaders(vertex_shader_source, fragment_shader_source)
+    with open(OTHER_VERTEX_SHADER_FILE) as vertex_file:
+        other_vertex_shader_source = vertex_file.read()
+
+    with open(OTHER_FRAGMENT_SHADER_FILE) as fragment_file:
+        other_fragment_shader_source = fragment_file.read()
+
+    main_shader = setup_shader(vertex_shader_source, fragment_shader_source)
+    alt_shader = setup_shader(other_vertex_shader_source, other_fragment_shader_source)
 
     # Load all materials
     materials: Dict[str, Material] = {
         "box-Material.002": Material.from_texture(
-            default_program_id, local_relative_path("../../examples/caixa/caixa.jpg")
+            main_shader, local_relative_path("../../examples/caixa/caixa.jpg")
         ),
-        "box-Material.003": Material.from_texture(
-            default_program_id,
-            local_relative_path("../../examples/monstro/monstro.jpg"),
+        "box-Material.003": Material(
+            alt_shader,
         ),
         "monster-default": Material.from_texture(
-            default_program_id,
+            main_shader,
             local_relative_path("../../examples/monstro/monstro.jpg"),
         ),
     }
@@ -289,7 +296,8 @@ def main():
 
     # Load buffers
     vertex_buffer, texture_map_buffer = setup_buffers(list(models.values()))
-    bind_buffers(default_program_id, vertex_buffer, texture_map_buffer)
+    bind_buffers(main_shader.program_id, vertex_buffer, texture_map_buffer)
+    bind_buffers(alt_shader.program_id, vertex_buffer, None)
 
     # Load textures
     setup_textures(list(materials.values()))
@@ -305,11 +313,8 @@ def main():
     glfw.show_window(win)
 
     # Key variables
-    model_loc = gl.glGetUniformLocation(default_program_id, "model")
-    view_loc = gl.glGetUniformLocation(default_program_id, "view")
-    projection_loc = gl.glGetUniformLocation(default_program_id, "projection")
 
-    renderer = Renderer(default_program_id, model_loc, view_loc, projection_loc)
+    renderer = Renderer()
 
     # Main loop
     gl.glEnable(gl.GL_DEPTH_TEST)
@@ -336,12 +341,11 @@ def main():
             entity.update(delta_time)
 
         # Update the camera
-        camera.update(win, default_program_id, delta_time)
+        camera.update(win, main_shader, delta_time)
 
-        renderer.setup_camera(camera)
         # Render elements
         for entity in entities:
-            renderer.render(entity)
+            renderer.render(entity, camera)
 
         glfw.swap_buffers(win)
         last_render = current_time
