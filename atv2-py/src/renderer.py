@@ -25,14 +25,6 @@ class Camera:
         self.fov = fov
         self.up = up
 
-    def view_matrix(self):
-        view = glm.lookAt(self.position, self.target, self.up)
-        return np.array(view).T
-
-    def projection_matrix(self, aspect_ratio, near=0.1, far=100.0):
-        projection = glm.perspective(glm.radians(self.fov), aspect_ratio, near, far)
-        return np.array(projection).T
-
     def update(self, dt):
         pass
 
@@ -43,6 +35,7 @@ class Renderer:
     model_loc: Any
     view_loc: Any
     projection_loc: Any
+    camera:Camera
 
     def __init__(
         self,
@@ -50,11 +43,13 @@ class Renderer:
         model_loc: Any,
         view_loc: Any,
         projection_loc: Any,
+        camera:Camera
     ) -> None:
         self.program = program
         self.model_loc = model_loc
         self.view_loc = view_loc
         self.projection_loc = projection_loc
+        self.camera = camera
 
     def _model_matrix(self, entity: Entity) -> np.ndarray:
 
@@ -74,7 +69,26 @@ class Renderer:
 
         return np.array(mat, dtype=np.float32).T
 
+    def view_matrix(self, camera):
+        view = glm.lookAt(self.camera.position, self.camera.target, self.camera.up)
+        return np.array(view).T
+
+    def projection_matrix(self, camera, aspect_ratio=1.0, near=0.1, far=100.0):
+        projection = glm.perspective(glm.radians(self.camera.fov), aspect_ratio, near, far)
+        return np.array(projection).T
+
+    def setup_camera(self, camera):
+        view = self.view_matrix(camera)
+        projection = self.projection_matrix(camera)
+
+        gl.glUniformMatrix4fv(self.view_loc, 1, gl.GL_TRUE, view)
+        gl.glUniformMatrix4fv(self.projection_loc, 1, gl.GL_TRUE, projection)
+
     def render(self, entity: Entity) -> None:
         model = entity.model
 
+        mat = self._model_matrix(entity)
+        gl.glUniformMatrix4fv(self.model_loc, 1, gl.GL_TRUE, mat)
+
         gl.glBindTexture(gl.GL_TEXTURE_2D, model.texture_id)
+        gl.glDrawArrays(model.draw_mode, model.offset, len(model.vertices))
