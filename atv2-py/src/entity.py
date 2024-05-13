@@ -43,7 +43,7 @@ class Entity:
         model: Model,
         position: glm.vec3 = glm.vec3(0.0, 0.0, 0.0),
         scale: glm.vec3 = glm.vec3(1.0, 1.0, 1.0),
-        rotation: glm.vec3 = glm.vec3(0.0, 0.0, 0.0),
+        rotation: glm.vec3 = glm.vec3(1.0, 0.0, 0.0),
         angle: float = 0.0,
         visible: bool = True,
         draw_mode: int = gl.GL_TRIANGLES,

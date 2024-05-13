@@ -1,17 +1,17 @@
 from typing import Any, Callable, List
 
 import glfw
+import glm
 import numpy as np
 import OpenGL.GL as gl
 from PIL import Image
 
-
-from renderer import Renderer
+from renderer import Camera, Renderer
 from entity import Model, Entity
+from wavefront import load_file
 
-
-VERTEX_SHADER_FILE = "./shaders/vertex.vert"
-FRAGMENT_SHADER_FILE = "./shaders/fragment.frag"
+VERTEX_SHADER_FILE = "../shaders/vertex.vert"
+FRAGMENT_SHADER_FILE = "../shaders/fragment.frag"
 
 
 def init_window(
@@ -90,7 +90,7 @@ def setup_buffers(program, models: list[Model] = []):
     flat_vertices = np.array([], dtype=np.float32)
     for model in models:
         # TODO: Is the offset in bytes or positions?
-        model.offset = len(flat_vertices)
+        model.offset = len(flat_vertices) // 3
         flat_vertices = np.concatenate(
             [flat_vertices, model.vertices], dtype=np.float32
         )
@@ -115,7 +115,7 @@ def setup_buffers(program, models: list[Model] = []):
     flat_texture_coords = np.array([], dtype=np.float32)
     for model in models:
         # TODO: Is the offset in bytes or positions?
-        model.offset = len(flat_texture_coords)
+        model.offset = len(flat_texture_coords) // 2
         flat_texture_coords = np.concatenate(
             [flat_texture_coords, model.texture_coords], dtype=np.float32
         )
@@ -175,9 +175,9 @@ def setup_events(
     glfw.set_cursor_pos_callback(win, cursor_handler)
 
 
-def setup_textures(program):
+def setup_textures(program, texture_files):
     # Load texture
-    textures = gl.glGenTextures(2)
+    textures = gl.glGenTextures(len(texture_files))
 
     # Set the texture wrapping parameters
     gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_S, gl.GL_REPEAT)
@@ -186,22 +186,22 @@ def setup_textures(program):
     # Set the texture filtering parameters
     gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_LINEAR)
     gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_LINEAR)
-
-    # Load the image
-    gl.glBindTexture(gl.GL_TEXTURE_2D, 0)
-    img = Image.open("textures/test.jpg")
-    img_data = img.convert("RGBA").tobytes("raw", "RGBA", 0, -1)
-    gl.glTexImage2D(
-        gl.GL_TEXTURE_2D,
-        0,
-        gl.GL_RGBA,
-        img.width,
-        img.height,
-        0,
-        gl.GL_RGBA,
-        gl.GL_UNSIGNED_BYTE,
-        img_data,
-    )
+    for i, texture_file in enumerate(texture_files):
+        # Load the image
+        gl.glBindTexture(gl.GL_TEXTURE_2D, i)
+        img = Image.open(texture_file)
+        img_data = img.convert("RGBA").tobytes("raw", "RGBA", 0, -1)
+        gl.glTexImage2D(
+            gl.GL_TEXTURE_2D,
+            0,
+            gl.GL_RGBA,
+            img.width,
+            img.height,
+            0,
+            gl.GL_RGBA,
+            gl.GL_UNSIGNED_BYTE,
+            img_data,
+        )
 
     return textures
 
@@ -213,16 +213,31 @@ def closer_handler(win, key, scancode, action, mods):
 
 
 def main():
+    models: List[Model] = []
+    textures: List[str] = []
+    entities: List[Entity] = []
+
+    box_sky = load_file("../../examples/caixa/caixa.obj")
+    box_texture = "../../examples/caixa/caixa2.jpg"
+
+    box_vert = np.array(box_sky["vertices"], dtype=np.float32).flatten()
+    box_text = np.array(box_sky["texture"], dtype=np.float32).flatten()
+
+    models.append(Model(box_vert, box_text, 0))
+    textures.append(box_texture)
+    entities.append(Entity(models[0]))
+
+
     # Configure window
-    win = init_window("Hello, Triangle!", 800, 800)
+    win = init_window("Eldrich Horrors Beyond Your Comprehension :D", 800, 800)
     # Load shaders
     program = setup_shaders()
     # Load buffers
-    setup_buffers(program)
+    setup_buffers(program, models)
     # Setup events
     setup_events(win, key_handlers=[closer_handler])
     # Load textures
-    setup_textures(program)
+    setup_textures(program, textures)
 
     # Show window
     glfw.show_window(win)
@@ -232,8 +247,9 @@ def main():
     view_loc = gl.glGetUniformLocation(program, "view")
     projection_loc = gl.glGetUniformLocation(program, "projection")
 
-    entities = []
     renderer = Renderer(program, model_loc, view_loc, projection_loc)
+    camera = Camera()
+    camera.position = glm.vec3(20,20,0)
 
     # Main loop
     last_render = glfw.get_time()
@@ -252,6 +268,7 @@ def main():
         for entity in entities:
             entity.update(delta_time)
 
+        renderer.setup_camera(camera)
         # Render elements
         for entity in entities:
             renderer.render(entity)

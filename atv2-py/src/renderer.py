@@ -35,7 +35,6 @@ class Renderer:
     model_loc: Any
     view_loc: Any
     projection_loc: Any
-    camera:Camera
 
     def __init__(
         self,
@@ -43,13 +42,11 @@ class Renderer:
         model_loc: Any,
         view_loc: Any,
         projection_loc: Any,
-        camera:Camera
-    ) -> None:
+   ) -> None:
         self.program = program
         self.model_loc = model_loc
         self.view_loc = view_loc
         self.projection_loc = projection_loc
-        self.camera = camera
 
     def _model_matrix(self, entity: Entity) -> np.ndarray:
 
@@ -66,15 +63,14 @@ class Renderer:
             mat,
             entity.scale,
         )
-
         return np.array(mat, dtype=np.float32).T
 
     def view_matrix(self, camera):
-        view = glm.lookAt(self.camera.position, self.camera.target, self.camera.up)
+        view = glm.lookAt(camera.position, camera.target, camera.up)
         return np.array(view).T
 
     def projection_matrix(self, camera, aspect_ratio=1.0, near=0.1, far=100.0):
-        projection = glm.perspective(glm.radians(self.camera.fov), aspect_ratio, near, far)
+        projection = glm.perspective(glm.radians(camera.fov), aspect_ratio, near, far)
         return np.array(projection).T
 
     def setup_camera(self, camera):
