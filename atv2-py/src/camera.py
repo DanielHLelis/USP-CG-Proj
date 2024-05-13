@@ -46,7 +46,7 @@ class Camera:
         far=100.0,
         sensitivity_x=0.05,
         sensitivity_y=0.05,
-        move_xyz=False,
+        move_xyz=True,
         base_speed=10.0,
         base_fov=80.0,
         running_speed=25.0,
