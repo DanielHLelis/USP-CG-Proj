@@ -42,7 +42,7 @@ class Renderer:
         model_loc: Any,
         view_loc: Any,
         projection_loc: Any,
-   ) -> None:
+    ) -> None:
         self.program = program
         self.model_loc = model_loc
         self.view_loc = view_loc
@@ -75,7 +75,7 @@ class Renderer:
 
     def setup_camera(self, camera):
         view = self.view_matrix(camera)
-        projection = self.projection_matrix(camera)
+        projection = self.projection_matrix(camera, near=1)
 
         gl.glUniformMatrix4fv(self.view_loc, 1, gl.GL_TRUE, view)
         gl.glUniformMatrix4fv(self.projection_loc, 1, gl.GL_TRUE, projection)

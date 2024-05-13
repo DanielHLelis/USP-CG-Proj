@@ -8,10 +8,11 @@ from PIL import Image
 
 from renderer import Camera, Renderer
 from entity import Model, Entity
-from wavefront import load_file
 
 VERTEX_SHADER_FILE = "../shaders/vertex.vert"
 FRAGMENT_SHADER_FILE = "../shaders/fragment.frag"
+
+# TODO: support mtl :)
 
 
 def init_window(
@@ -84,53 +85,48 @@ def setup_shaders():
 def setup_buffers(program, models: list[Model] = []):
     # Create buffer slot
     buffer = gl.glGenBuffers(2)
+
+    # Bind the Vertex Array Object
     vao = gl.glGenVertexArrays(1)
+    gl.glBindVertexArray(vao)
 
     # Setup vertices
-    flat_vertices = np.array([], dtype=np.float32)
+    vertices = np.ndarray([0, 3], dtype=np.float32)
     for model in models:
         # TODO: Is the offset in bytes or positions?
-        model.offset = len(flat_vertices) // 3
-        flat_vertices = np.concatenate(
-            [flat_vertices, model.vertices], dtype=np.float32
-        )
+        model.offset = len(vertices)
+        print(f"Model offset: {model.offset}")
+        vertices = np.concatenate([vertices, model.vertices], dtype=np.float32)
 
     # Make this the current buffer and upload the data
     gl.glBindBuffer(gl.GL_ARRAY_BUFFER, buffer[0])
-    gl.glBufferData(
-        gl.GL_ARRAY_BUFFER, flat_vertices.nbytes, flat_vertices, gl.GL_STATIC_DRAW
-    )
-
-    # Bind the Vertex Array Object
-    gl.glBindVertexArray(vao)
+    gl.glBufferData(gl.GL_ARRAY_BUFFER, vertices.nbytes, vertices, gl.GL_STATIC_DRAW)
 
     # Bind the position attribute
-    stride = flat_vertices.strides[0]
+    stride = vertices.strides[0]
     offset = gl.ctypes.c_void_p(0)
     loc = gl.glGetAttribLocation(program, "position")
     gl.glEnableVertexAttribArray(loc)
     gl.glVertexAttribPointer(loc, 3, gl.GL_FLOAT, False, stride, offset)
 
     # Setup texture mappings
-    flat_texture_coords = np.array([], dtype=np.float32)
+    texture_coords = np.ndarray([0, 2], dtype=np.float32)
     for model in models:
-        # TODO: Is the offset in bytes or positions?
-        model.offset = len(flat_texture_coords) // 2
-        flat_texture_coords = np.concatenate(
-            [flat_texture_coords, model.texture_coords], dtype=np.float32
+        texture_coords = np.concatenate(
+            [texture_coords, model.texture_coords], dtype=np.float32
         )
 
     # Make this the current buffer and upload the data
     gl.glBindBuffer(gl.GL_ARRAY_BUFFER, buffer[1])
     gl.glBufferData(
         gl.GL_ARRAY_BUFFER,
-        flat_texture_coords.nbytes,
-        flat_texture_coords,
+        texture_coords.nbytes,
+        texture_coords,
         gl.GL_STATIC_DRAW,
     )
 
     # Bind the position attribute
-    stride = flat_texture_coords.strides[0]
+    stride = texture_coords.strides[0]
     offset = gl.ctypes.c_void_p(0)
     loc = gl.glGetAttribLocation(program, "texture_coord")
     gl.glEnableVertexAttribArray(loc)
@@ -179,18 +175,23 @@ def setup_textures(program, texture_files):
     # Load texture
     textures = gl.glGenTextures(len(texture_files))
 
-    # Set the texture wrapping parameters
-    gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_S, gl.GL_REPEAT)
-    gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_T, gl.GL_REPEAT)
-
-    # Set the texture filtering parameters
-    gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_LINEAR)
-    gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_LINEAR)
     for i, texture_file in enumerate(texture_files):
         # Load the image
-        gl.glBindTexture(gl.GL_TEXTURE_2D, i)
         img = Image.open(texture_file)
         img_data = img.convert("RGBA").tobytes("raw", "RGBA", 0, -1)
+
+        # Select the texture
+        gl.glBindTexture(gl.GL_TEXTURE_2D, i)
+
+        # Set the texture wrapping parameters
+        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_S, gl.GL_REPEAT)
+        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_T, gl.GL_REPEAT)
+
+        # Set the texture filtering parameters
+        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_LINEAR)
+        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_LINEAR)
+
+        # Load the texture
         gl.glTexImage2D(
             gl.GL_TEXTURE_2D,
             0,
@@ -217,16 +218,51 @@ def main():
     textures: List[str] = []
     entities: List[Entity] = []
 
-    box_sky = load_file("../../examples/caixa/caixa.obj")
-    box_texture = "../../examples/caixa/caixa2.jpg"
+    box_texture = "../../examples/caixa/caixa.jpg"
+    box_model = Model.load_obj("../../examples/caixa/caixa.obj", 0)
 
-    box_vert = np.array(box_sky["vertices"], dtype=np.float32).flatten()
-    box_text = np.array(box_sky["texture"], dtype=np.float32).flatten()
-
-    models.append(Model(box_vert, box_text, 0))
+    models.append(box_model)
     textures.append(box_texture)
-    entities.append(Entity(models[0]))
+    entities.append(Entity(box_model))
 
+    monster_model = Model.load_obj("../../examples/monstro/monstro.obj", 1)
+    monster_texture = "../../examples/monstro/monstro.jpg"
+
+    models.append(monster_model)
+    textures.append(monster_texture)
+    entities.append(Entity(monster_model, position=glm.vec3(2, 0, 0)))
+
+    # TODO: move this
+    camera = Camera()
+    camera.position = glm.vec3(10, 10, 0)
+
+    polygon_mode = False
+
+    def camera_handler(win, key, scancode, action, mods):
+        nonlocal polygon_mode
+
+        step = 0.5
+
+        if key == glfw.KEY_A and action == glfw.PRESS:
+            camera.position.x -= step
+
+        if key == glfw.KEY_Q and action == glfw.PRESS:
+            camera.position.x += step
+
+        if key == glfw.KEY_W and action == glfw.PRESS:
+            camera.position.y -= step
+
+        if key == glfw.KEY_S and action == glfw.PRESS:
+            camera.position.y += step
+
+        if key == glfw.KEY_E and action == glfw.PRESS:
+            camera.position.z -= step
+
+        if key == glfw.KEY_D and action == glfw.PRESS:
+            camera.position.z += step
+
+        if key == glfw.KEY_P and action == glfw.PRESS:
+            polygon_mode = not polygon_mode
 
     # Configure window
     win = init_window("Eldrich Horrors Beyond Your Comprehension :D", 800, 800)
@@ -235,7 +271,7 @@ def main():
     # Load buffers
     setup_buffers(program, models)
     # Setup events
-    setup_events(win, key_handlers=[closer_handler])
+    setup_events(win, key_handlers=[closer_handler, camera_handler])
     # Load textures
     setup_textures(program, textures)
 
@@ -248,10 +284,9 @@ def main():
     projection_loc = gl.glGetUniformLocation(program, "projection")
 
     renderer = Renderer(program, model_loc, view_loc, projection_loc)
-    camera = Camera()
-    camera.position = glm.vec3(20,20,0)
 
     # Main loop
+    gl.glEnable(gl.GL_DEPTH_TEST)
     last_render = glfw.get_time()
     while not glfw.window_should_close(win):
         # Keep track of elapsed time
@@ -262,7 +297,13 @@ def main():
 
         # Clear the screen
         gl.glClear(gl.GL_COLOR_BUFFER_BIT)
-        gl.glClearColor(0, 0, 0.5, 1.0)
+        gl.glClear(gl.GL_DEPTH_BUFFER_BIT)
+        gl.glClearColor(0, 0, 0, 1.0)
+
+        if polygon_mode:
+            gl.glPolygonMode(gl.GL_FRONT_AND_BACK, gl.GL_LINE)
+        else:
+            gl.glPolygonMode(gl.GL_FRONT_AND_BACK, gl.GL_FILL)
 
         # Update elements
         for entity in entities:

@@ -1,5 +1,7 @@
 from typing import Optional, Callable, Any
 
+from wavefront import load_file
+
 import numpy as np
 import OpenGL.GL as gl
 import glm
@@ -28,6 +30,23 @@ class Model:
         self.offset = 0
         self.texture_offset = 0
 
+    @classmethod
+    def load_obj(cls, filepath: str, texture_id: int) -> "Model":
+        model = load_file(filepath)
+        texture_coords = []
+        vertices = []
+
+        for face in model["faces"]:
+            for vertex in face[0]:
+                vertices.append(model["vertices"][vertex - 1])
+            for texture in face[1]:
+                texture_coords.append(model["texture"][texture - 1])
+
+        vertices = np.array(vertices, dtype=np.float32)
+        texture_coords = np.array(texture_coords, dtype=np.float32)
+
+        return Model(vertices, texture_coords, texture_id)
+
 
 class Entity:
     model: Model
@@ -44,7 +63,7 @@ class Entity:
         position: glm.vec3 = glm.vec3(0.0, 0.0, 0.0),
         scale: glm.vec3 = glm.vec3(1.0, 1.0, 1.0),
         rotation: glm.vec3 = glm.vec3(1.0, 0.0, 0.0),
-        angle: float = 0.0,
+        angle: float = 45.0,
         visible: bool = True,
         draw_mode: int = gl.GL_TRIANGLES,
     ):

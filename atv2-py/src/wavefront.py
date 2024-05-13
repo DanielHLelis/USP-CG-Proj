@@ -1,6 +1,5 @@
 def load_file(filepath: str):
     """Loads a Wavefront OBJ file."""
-    objects = {}
     vertices = []
     texture_coords = []
     faces = []
