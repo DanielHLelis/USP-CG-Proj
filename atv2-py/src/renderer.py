@@ -67,5 +67,16 @@ class Renderer:
         mat = self._model_matrix(entity)
         gl.glUniformMatrix4fv(self.model_loc, 1, gl.GL_TRUE, mat)
 
-        gl.glBindTexture(gl.GL_TEXTURE_2D, model.texture_id)
-        gl.glDrawArrays(model.draw_mode, model.offset, len(model.vertices))
+        segments = list(model.material_swaps.keys()) + [len(model.vertices)]
+
+        for i in range(len(segments) - 1):
+            start = segments[i]
+            end = segments[i + 1]
+            material = model.materials[model.material_swaps[start]]
+
+            gl.glUseProgram(material.program_id)
+            gl.glBindTexture(
+                gl.GL_TEXTURE_2D,
+                material.texture_id,
+            )
+            gl.glDrawArrays(model.draw_mode, model.offset + start, end - start)

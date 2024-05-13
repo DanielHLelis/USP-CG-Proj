@@ -1,5 +1,5 @@
 import os
-from typing import Any, Callable, List
+from typing import Any, Callable, List, Dict, Tuple, cast
 
 import glfw
 import glm
@@ -9,7 +9,7 @@ from PIL import Image
 
 from camera import Camera
 from renderer import Renderer
-from entity import Model, Entity
+from entity import Material, Model, Entity
 
 
 def local_relative_path(path: str) -> str:
@@ -51,14 +51,8 @@ def init_window(
     return win
 
 
-def setup_shaders():
-    with open(VERTEX_SHADER_FILE) as vertex_file:
-        vertex_shader_source = vertex_file.read()
-
-    with open(FRAGMENT_SHADER_FILE) as fragment_file:
-        fragment_shader_source = fragment_file.read()
-
-    program = gl.glCreateProgram()
+def setup_shaders(vertex_shader_source: str, fragment_shader_source: str) -> int:
+    program_id = cast(int, gl.glCreateProgram())
 
     # Build and compile vertex shader
     vertex_shader = gl.glCreateShader(gl.GL_VERTEX_SHADER)
@@ -77,27 +71,28 @@ def setup_shaders():
         raise RuntimeError(f"Fragment shader compilation error: {err}")
 
     # Link shaders
-    gl.glAttachShader(program, vertex_shader)
-    gl.glAttachShader(program, fragment_shader)
+    gl.glAttachShader(program_id, vertex_shader)
+    gl.glAttachShader(program_id, fragment_shader)
 
-    gl.glLinkProgram(program)
-    if not gl.glGetProgramiv(program, gl.GL_LINK_STATUS):
-        err = gl.glGetProgramInfoLog(program)
+    gl.glLinkProgram(program_id)
+    if not gl.glGetProgramiv(program_id, gl.GL_LINK_STATUS):
+        err = gl.glGetProgramInfoLog(program_id)
         raise RuntimeError(f"Program linking error: {err}")
 
     # Delete shaders
     gl.glDeleteShader(vertex_shader)
     gl.glDeleteShader(fragment_shader)
 
+    # Use the default program
+    gl.glUseProgram(program_id)
+
     # Return program
-    gl.glUseProgram(program)
-
-    return program
+    return program_id
 
 
-def setup_buffers(program, models: list[Model] = []):
+def setup_buffers(models: list[Model] = []) -> Tuple[int, int]:
     # Create buffer slot
-    buffer = gl.glGenBuffers(2)
+    vertex_buffer, texture_map_buffer = cast(List[int], gl.glGenBuffers(2))
 
     # Bind the Vertex Array Object
     vao = gl.glGenVertexArrays(1)
@@ -110,15 +105,8 @@ def setup_buffers(program, models: list[Model] = []):
         vertices = np.concatenate([vertices, model.vertices], dtype=np.float32)
 
     # Make this the current buffer and upload the data
-    gl.glBindBuffer(gl.GL_ARRAY_BUFFER, buffer[0])
+    gl.glBindBuffer(gl.GL_ARRAY_BUFFER, vertex_buffer)
     gl.glBufferData(gl.GL_ARRAY_BUFFER, vertices.nbytes, vertices, gl.GL_STATIC_DRAW)
-
-    # Bind the position attribute
-    stride = vertices.strides[0]
-    offset = gl.ctypes.c_void_p(0)
-    loc = gl.glGetAttribLocation(program, "position")
-    gl.glEnableVertexAttribArray(loc)
-    gl.glVertexAttribPointer(loc, 3, gl.GL_FLOAT, False, stride, offset)
 
     # Setup texture mappings
     texture_coords = np.ndarray([0, 2], dtype=np.float32)
@@ -127,8 +115,8 @@ def setup_buffers(program, models: list[Model] = []):
             [texture_coords, model.texture_coords], dtype=np.float32
         )
 
-    # Make this the current buffer and upload the data
-    gl.glBindBuffer(gl.GL_ARRAY_BUFFER, buffer[1])
+    # Make this the current buffer and upload the texture data
+    gl.glBindBuffer(gl.GL_ARRAY_BUFFER, texture_map_buffer)
     gl.glBufferData(
         gl.GL_ARRAY_BUFFER,
         texture_coords.nbytes,
@@ -136,12 +124,23 @@ def setup_buffers(program, models: list[Model] = []):
         gl.GL_STATIC_DRAW,
     )
 
-    # Bind the position attribute
-    stride = texture_coords.strides[0]
-    offset = gl.ctypes.c_void_p(0)
-    loc = gl.glGetAttribLocation(program, "texture_coord")
+    return vertex_buffer, texture_map_buffer
+
+
+def bind_buffers(
+    program_id: int,
+    vertex_buffer: int,
+    texture_map_buffer: int,
+):
+    gl.glBindBuffer(gl.GL_ARRAY_BUFFER, vertex_buffer)
+    loc = gl.glGetAttribLocation(program_id, "position")
     gl.glEnableVertexAttribArray(loc)
-    gl.glVertexAttribPointer(loc, 2, gl.GL_FLOAT, False, stride, offset)
+    gl.glVertexAttribPointer(loc, 3, gl.GL_FLOAT, False, 12, gl.ctypes.c_void_p(0))
+
+    gl.glBindBuffer(gl.GL_ARRAY_BUFFER, texture_map_buffer)
+    loc = gl.glGetAttribLocation(program_id, "texture_coord")
+    gl.glEnableVertexAttribArray(loc)
+    gl.glVertexAttribPointer(loc, 2, gl.GL_FLOAT, False, 8, gl.ctypes.c_void_p(0))
 
 
 def setup_events(
@@ -182,17 +181,22 @@ def setup_events(
     glfw.set_cursor_pos_callback(win, cursor_handler)
 
 
-def setup_textures(program, texture_files):
-    # Load texture
-    textures = gl.glGenTextures(len(texture_files))
+def setup_textures(materials: List[Material]):
+    for material in materials:
+        # Skip if there is no texture
+        if material.texture_path is None:
+            continue
 
-    for i, texture_file in enumerate(texture_files):
+        # Create the texture
+        texture = gl.glGenTextures(1)
+        material.texture_id = texture
+
         # Load the image
-        img = Image.open(texture_file)
+        img = Image.open(material.texture_path)
         img_data = img.convert("RGBA").tobytes("raw", "RGBA", 0, -1)
 
         # Select the texture
-        gl.glBindTexture(gl.GL_TEXTURE_2D, i)
+        gl.glBindTexture(gl.GL_TEXTURE_2D, texture)
 
         # Set the texture wrapping parameters
         gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_S, gl.GL_REPEAT)
@@ -215,8 +219,6 @@ def setup_textures(program, texture_files):
             img_data,
         )
 
-    return textures
-
 
 def closer_handler(win, key, scancode, action, mods):
     # Exit handler (ESC)
@@ -225,30 +227,11 @@ def closer_handler(win, key, scancode, action, mods):
 
 
 def main():
-    models: List[Model] = []
-    textures: List[str] = []
-    entities: List[Entity] = []
-
-    box_texture = local_relative_path("../../examples/caixa/caixa.jpg")
-    box_model = Model.load_obj(local_relative_path("../../examples/caixa/caixa.obj"), 0)
-
-    models.append(box_model)
-    textures.append(box_texture)
-    entities.append(Entity(box_model))
-
-    monster_model = Model.load_obj(
-        local_relative_path("../../examples/monstro/monstro.obj"), 1
-    )
-    monster_texture = local_relative_path("../../examples/monstro/monstro.jpg")
-
-    models.append(monster_model)
-    textures.append(monster_texture)
-    entities.append(Entity(monster_model, position=glm.vec3(0, 0, 4)))
-
     # TODO: move this
     camera = Camera()
     camera.position = glm.vec3(10, 1, 0)
 
+    # TODO: move this to renderer
     polygon_mode = False
 
     def polygon_handler(win, key, scancode, action, mods):
@@ -259,28 +242,74 @@ def main():
 
     # Configure window
     win = init_window("Eldrich Horrors Beyond Your Comprehension :D", 1280, 720)
+
     # Load shaders
-    program = setup_shaders()
+    with open(VERTEX_SHADER_FILE) as vertex_file:
+        vertex_shader_source = vertex_file.read()
+
+    with open(FRAGMENT_SHADER_FILE) as fragment_file:
+        fragment_shader_source = fragment_file.read()
+
+    default_program_id = setup_shaders(vertex_shader_source, fragment_shader_source)
+
+    # Load all materials
+    materials: Dict[str, Material] = {
+        "box-Material.002": Material.from_texture(
+            default_program_id, local_relative_path("../../examples/caixa/caixa.jpg")
+        ),
+        "box-Material.003": Material.from_texture(
+            default_program_id,
+            local_relative_path("../../examples/monstro/monstro.jpg"),
+        ),
+        "monster-default": Material.from_texture(
+            default_program_id,
+            local_relative_path("../../examples/monstro/monstro.jpg"),
+        ),
+    }
+
+    # Load all models
+    models: Dict[str, Model] = {
+        "box": Model.load_obj(
+            local_relative_path("../../examples/caixa/caixa.obj"),
+            materials,
+            "box-",
+        ),
+        "monster": Model.load_obj(
+            local_relative_path("../../examples/monstro/monstro.obj"),
+            materials,
+            "monster-",
+        ),
+    }
+
+    # Load all textures
+    entities: List[Entity] = [
+        Entity(models["box"]),
+        Entity(models["monster"], position=glm.vec3(0, 0, 4)),
+    ]
+
     # Load buffers
-    setup_buffers(program, models)
+    vertex_buffer, texture_map_buffer = setup_buffers(list(models.values()))
+    bind_buffers(default_program_id, vertex_buffer, texture_map_buffer)
+
+    # Load textures
+    setup_textures(list(materials.values()))
+
     # Setup events
     setup_events(
         win,
         key_handlers=[closer_handler, polygon_handler, camera.key_handler],
         cursor_handlers=[camera.cursor_handler],
     )
-    # Load textures
-    setup_textures(program, textures)
 
     # Show window
     glfw.show_window(win)
 
     # Key variables
-    model_loc = gl.glGetUniformLocation(program, "model")
-    view_loc = gl.glGetUniformLocation(program, "view")
-    projection_loc = gl.glGetUniformLocation(program, "projection")
+    model_loc = gl.glGetUniformLocation(default_program_id, "model")
+    view_loc = gl.glGetUniformLocation(default_program_id, "view")
+    projection_loc = gl.glGetUniformLocation(default_program_id, "projection")
 
-    renderer = Renderer(program, model_loc, view_loc, projection_loc)
+    renderer = Renderer(default_program_id, model_loc, view_loc, projection_loc)
 
     # Main loop
     gl.glEnable(gl.GL_DEPTH_TEST)
@@ -307,7 +336,7 @@ def main():
             entity.update(delta_time)
 
         # Update the camera
-        camera.update(win, program, delta_time)
+        camera.update(win, default_program_id, delta_time)
 
         renderer.setup_camera(camera)
         # Render elements

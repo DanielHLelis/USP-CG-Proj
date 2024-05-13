@@ -35,6 +35,7 @@ class Camera:
     _fov: float
     _movement_speed: float
 
+    # TODO: Document the class and its methods
     def __init__(
         self,
         position=glm.vec3(0.0, 0.0, 0.0),

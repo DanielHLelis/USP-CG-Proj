@@ -1,10 +1,13 @@
+DEFAULT_MATERIAL = "default"
+
+
 def load_file(filepath: str):
     """Loads a Wavefront OBJ file."""
     vertices = []
     texture_coords = []
     faces = []
 
-    material = None
+    material = DEFAULT_MATERIAL
 
     # abre o arquivo obj para leitura
     for line in open(filepath, "r"):  ## para cada linha do arquivo .obj
