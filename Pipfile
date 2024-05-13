@@ -9,6 +9,7 @@ pyopengl = "*"
 numpy = "*"
 pyglm = "==1.1.7"
 pillow = "*"
+pyopengl-accelerate = { version = "*", platform = "==linux_x86_64" }
 
 [dev-packages]
 jupyter = "*"
