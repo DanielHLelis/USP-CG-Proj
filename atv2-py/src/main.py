@@ -11,8 +11,10 @@ from camera import Camera
 from renderer import Renderer
 from entity import Model, Entity
 
+
 def local_relative_path(path: str) -> str:
     return os.path.join(os.path.dirname(__file__), path)
+
 
 VERTEX_SHADER_FILE = local_relative_path("../shaders/vertex.vert")
 FRAGMENT_SHADER_FILE = local_relative_path("../shaders/fragment.frag")
@@ -25,8 +27,6 @@ def init_window(
     width: int,
     height: int,
     resizable=False,
-
-
 ):
     glfw.init()
     glfw.window_hint(glfw.CONTEXT_VERSION_MAJOR, 4)
@@ -47,7 +47,7 @@ def init_window(
     glfw.set_input_mode(win, glfw.CURSOR, glfw.CURSOR_DISABLED)
     if glfw.raw_mouse_motion_supported():
         glfw.set_input_mode(win, glfw.RAW_MOUSE_MOTION, glfw.TRUE)
-    
+
     return win
 
 
@@ -236,7 +236,9 @@ def main():
     textures.append(box_texture)
     entities.append(Entity(box_model))
 
-    monster_model = Model.load_obj(local_relative_path("../../examples/monstro/monstro.obj"), 1)
+    monster_model = Model.load_obj(
+        local_relative_path("../../examples/monstro/monstro.obj"), 1
+    )
     monster_texture = local_relative_path("../../examples/monstro/monstro.jpg")
 
     models.append(monster_model)
@@ -249,28 +251,8 @@ def main():
 
     polygon_mode = False
 
-    def camera_handler(win, key, scancode, action, mods):
+    def polygon_handler(win, key, scancode, action, mods):
         nonlocal polygon_mode
-
-        step = 0.5
-
-        if key == glfw.KEY_A and action == glfw.PRESS:
-            camera.position.x -= step
-
-        if key == glfw.KEY_Q and action == glfw.PRESS:
-            camera.position.x += step
-
-        if key == glfw.KEY_W and action == glfw.PRESS:
-            camera.position.y += step
-
-        if key == glfw.KEY_S and action == glfw.PRESS:
-            camera.position.y -= step
-
-        if key == glfw.KEY_E and action == glfw.PRESS:
-            camera.position.z += step
-
-        if key == glfw.KEY_D and action == glfw.PRESS:
-            camera.position.z -= step
 
         if key == glfw.KEY_P and action == glfw.PRESS:
             polygon_mode = not polygon_mode
@@ -282,7 +264,11 @@ def main():
     # Load buffers
     setup_buffers(program, models)
     # Setup events
-    setup_events(win, key_handlers=[closer_handler, camera_handler], cursor_handlers=[camera.cursor_handler])
+    setup_events(
+        win,
+        key_handlers=[closer_handler, polygon_handler, camera.key_handler],
+        cursor_handlers=[camera.cursor_handler],
+    )
     # Load textures
     setup_textures(program, textures)
 

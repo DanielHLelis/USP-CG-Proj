@@ -49,7 +49,9 @@ class Renderer:
         return np.array(view).T
 
     def _projection_matrix(self, camera: Camera):
-        projection = glm.perspective(glm.radians(camera.fov), camera.aspect_ratio, camera.near, camera.far)
+        projection = glm.perspective(
+            glm.radians(camera.fov), camera.aspect_ratio, camera.near, camera.far
+        )
         return np.array(projection).T
 
     def setup_camera(self, camera):
