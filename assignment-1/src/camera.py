@@ -5,8 +5,8 @@ import glfw
 import numpy as np
 
 Y_CLAMP = 1.5, 40.0
-X_CLAMP = -125.0, 140.0
-Z_CLAMP = -120.0, 180.0
+X_CLAMP = -180.0, 120.0
+Z_CLAMP = -100.0, 120.0
 
 
 class Camera:
