@@ -4,7 +4,7 @@ import glm
 import glfw
 import numpy as np
 
-Y_CLAMP = 0.0, 40.0
+Y_CLAMP = 0.5, 40.0
 X_CLAMP = -125.0, 140.0
 Z_CLAMP = -120.0, 180.0
 
@@ -84,9 +84,10 @@ class Camera:
         self._previous_x = None
         self._previous_y = None
         self._pressed_keys = set()
-        self._front = self.update_front()
         self._fov = base_fov
         self._movement_speed = 0.0
+
+        self._front = self.update_front()
 
     def _update_aspect_ratio(self, win):
         w, h = glfw.get_framebuffer_size(win)

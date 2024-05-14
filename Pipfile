@@ -7,7 +7,7 @@ name = "pypi"
 glfw = "*"
 pyopengl = "*"
 numpy = "*"
-pyglm = "==1.1.7"
+pyglm = "==2.7.1"
 pillow = "*"
 pyopengl-accelerate = { version = "*", platform = "==linux_x86_64" }
 

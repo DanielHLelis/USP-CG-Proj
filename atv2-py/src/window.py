@@ -1,4 +1,4 @@
-from typing import Any, List, Callable
+from typing import Any, Iterable, List, Callable
 
 
 import glfw
@@ -41,7 +41,7 @@ def init_window(
 
 def setup_events(
     win: Any,
-    entities: list[Entity] = [],
+    entities: Iterable[Entity] = [],
     key_handlers: List[KeyHandler] = [],
     cursor_handlers: List[CursorHandler] = [],
 ):

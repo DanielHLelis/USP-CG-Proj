@@ -19,30 +19,41 @@ class Renderer:
         self.polygon_mode = polygon_mode
 
     def _model_matrix(self, entity: Entity) -> np.ndarray:
-        rad_angle = np.radians(entity.angle)
+        # rad_angle = np.radians(entity.angle)
 
         mat = glm.mat4(1.0)
         mat = glm.translate(mat, entity.position)
+        # Join these rotations later
         mat = glm.rotate(
             mat,
-            rad_angle,
-            entity.rotation,
+            glm.radians(entity.angle_x),
+            glm.vec3(1.0, 0.0, 0.0),
+        )
+        mat = glm.rotate(
+            mat,
+            glm.radians(entity.angle_y),
+            glm.vec3(0.0, 1.0, 0.0),
+        )
+        mat = glm.rotate(
+            mat,
+            glm.radians(entity.angle_z),
+            glm.vec3(0.0, 0.0, 1.0),
         )
         mat = glm.scale(
             mat,
             entity.scale,
         )
-        return np.array(mat, dtype=np.float32).T
+        return np.array(mat, dtype=np.float32)
 
     def _view_matrix(self, camera: Camera) -> np.ndarray:
         view = glm.lookAt(camera.position, camera.target, camera.up)
-        return np.array(view).T
+        return np.array(view, dtype=np.float32)
 
     def _projection_matrix(self, camera: Camera):
         projection = glm.perspective(
             glm.radians(camera.fov), camera.aspect_ratio, camera.near, camera.far
         )
-        return np.array(projection).T
+        return np.array(projection, dtype=np.float32)
 
     def key_handler(
         self,

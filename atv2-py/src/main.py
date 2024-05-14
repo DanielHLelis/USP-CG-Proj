@@ -1,5 +1,5 @@
 import os
-from typing import Any, List, Dict
+from typing import Any, Dict
 
 import glfw
 import glm
@@ -10,12 +10,14 @@ from window import KeyHandler, init_window, setup_events, closer_handler
 from material import Material
 from shader import Shader
 from model import Buffers, Model
-from entity import Entity, Skybox, OkuuFumo
+from entity import Entity, Skybox, OkuuFumo, SelectableEntity
 
 
 def local_relative_path(path: str) -> str:
     return os.path.join(os.path.dirname(__file__), path)
 
+
+LOG_FPS = True
 
 VERTEX_SHADER_FILE = local_relative_path("../shaders/main.vert")
 FRAGMENT_SHADER_FILE = local_relative_path("../shaders/main.frag")
@@ -32,7 +34,9 @@ def debug_camera_handler(
         mods: int,
     ) -> None:
         if key == glfw.KEY_Z and action == glfw.PRESS:
-            print(f"Camera position: {camera.position}")
+            print(
+                f"Camera: position({camera.position.x}, {camera.position.y}, {camera.position.z})"
+            )
 
     return handler
 
@@ -42,10 +46,11 @@ def main():
     renderer = Renderer()
 
     # Create the camera
-    camera = Camera()
-    # Direct the camera to the main building
-    camera.yaw = 90.0
-    camera.position = glm.vec3(50, 0, 0)
+    camera = Camera(
+        # Direct the camera to the main building
+        yaw=270.0,
+        position=glm.vec3(0, 0.5, 50),
+    )
 
     # Configure window
     win = init_window("Eldrich Horrors Beyond Your Comprehension :D", 1280, 720)
@@ -97,13 +102,20 @@ def main():
         ),
     }
 
-    # Load all textures
-    entities: List[Entity] = [
-        Entity(models["monster"], position=glm.vec3(0, 0, 4)),
-        Skybox(models["skybox"]),
-        Entity(models["burgerpiz"], position=glm.vec3(0, -1, 0)),
-        OkuuFumo(models["okuu_fumo"], position=glm.vec3(15, -0.15, -3.5)),
-    ]
+    # Create entities
+    entities: Dict[str, Entity] = {
+        "monster": SelectableEntity(
+            glfw.KEY_1,
+            "monster",
+            models["monster"],
+            position=glm.vec3(-1.5, -0.97, 7.6),
+            scale=glm.vec3(0.5),
+            log_position=True,
+        ),
+        "skybox": Skybox(models["skybox"]),
+        "map": Entity(models["burgerpiz"], position=glm.vec3(0, -1, 0)),
+        "okuufumo": OkuuFumo(models["okuu_fumo"], position=glm.vec3(3.5, -0.15, 15)),
+    }
 
     # Load buffers
     buffers = Buffers.setup_buffers(models.values())
@@ -115,7 +127,7 @@ def main():
     # Setup events
     setup_events(
         win,
-        entities,
+        entities.values(),
         key_handlers=[
             closer_handler,
             renderer.key_handler,
@@ -138,12 +150,15 @@ def main():
         current_time = glfw.get_time()
         delta_time = current_time - last_render
 
-        if current_time - last_fps >= 1:
-            print(f"FPS: {frame_count}; Frame Time: {(current_time - last_fps) / frame_count * 1000}ms")
-            frame_count = 0
-            last_fps = glfw.get_time()
-        else:
-            frame_count += 1
+        if LOG_FPS:
+            if current_time - last_fps >= 1:
+                print(
+                    f"FPS: {frame_count}; Frame Time: {(current_time - last_fps) / frame_count * 1000:.4}ms"
+                )
+                frame_count = 0
+                last_fps = glfw.get_time()
+            else:
+                frame_count += 1
 
         # Get the events
         glfw.poll_events()
@@ -152,14 +167,14 @@ def main():
         camera.update(win, main_shader, delta_time)
 
         # Update elements
-        for entity in entities:
+        for entity in entities.values():
             entity.update(delta_time, camera)
 
         # Clear the screen
         renderer.pre_render()
 
         # Render elements
-        for entity in entities:
+        for entity in entities.values():
             renderer.draw_entity(entity, camera)
 
         glfw.swap_buffers(win)
