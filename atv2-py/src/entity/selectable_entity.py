@@ -97,13 +97,13 @@ class SelectableEntity(Entity):
                     case glfw.KEY_L:
                         self.position.x += self.movement_speed * dt
                     case glfw.KEY_U:
-                        self.position.y += self.movement_speed * dt
-                    case glfw.KEY_O:
                         self.position.y -= self.movement_speed * dt
+                    case glfw.KEY_O:
+                        self.position.y += self.movement_speed * dt
                     case glfw.KEY_Y:
-                        self.scale *= 1.0 + (self.scale_speed * dt)
+                        self.scale = self.scale * (1.0 + (self.scale_speed * dt))
                     case glfw.KEY_H:
-                        self.scale /= 1.0 + (self.scale_speed * dt)
+                        self.scale = self.scale / (1.0 + (self.scale_speed * dt))
 
     def key_handler(self) -> Optional[Callable[[Any, int, int, int, int], None]]:
         def handler(win, key, scancode, action, mods):
@@ -130,7 +130,12 @@ class SelectableEntity(Entity):
                 elif action == glfw.RELEASE:
                     self.pressed_keys.remove(key)
 
-            if self.log_position and key == glfw.KEY_Z and action == glfw.PRESS:
+            if (
+                self.selected
+                and self.log_position
+                and key == glfw.KEY_Z
+                and action == glfw.PRESS
+            ):
                 print(
                     f"Entity ({self.name}): position({self.position}) scale({self.scale.x}, {self.scale.y}, {self.scale.z}) rotation({self.angle_x}, {self.angle_y}, {self.angle_z})"
                 )

@@ -48,8 +48,8 @@ def main():
     # Create the camera
     camera = Camera(
         # Direct the camera to the main building
-        yaw=270.0,
-        position=glm.vec3(0, 0.5, 50),
+        yaw=245.0,
+        position=glm.vec3(12, 1.5, 55),
     )
 
     # Configure window
@@ -76,6 +76,31 @@ def main():
             local_relative_path("../models/okuu_fumo.mtl"),
             "okuufumo-",
         ),
+        **Material.load_mtllib(
+            main_shader,
+            local_relative_path("../models/boatmobile.mtl"),
+            "boatmobile-",
+        ),
+        **Material.load_mtllib(
+            main_shader,
+            local_relative_path("../models/krabbypatty.mtl"),
+            "krabbypatty-",
+        ),
+        **Material.load_mtllib(
+            main_shader,
+            local_relative_path("../models/shion.mtl"),
+            "shion-",
+        ),
+        **Material.load_mtllib(
+            main_shader,
+            local_relative_path("../models/spongebob.mtl"),
+            "spongebob-",
+        ),
+        **Material.load_mtllib(
+            main_shader,
+            local_relative_path("../models/squidward_house.mtl"),
+            "squidhouse-",
+        ),
     }
 
     # Load all models
@@ -100,6 +125,31 @@ def main():
             materials,
             "okuufumo-",
         ),
+        "boatmobile": Model.load_obj(
+            local_relative_path("../models/boatmobile.obj"),
+            materials,
+            "boatmobile-",
+        ),
+        "krabbypatty": Model.load_obj(
+            local_relative_path("../models/krabbypatty.obj"),
+            materials,
+            "krabbypatty-",
+        ),
+        "shion": Model.load_obj(
+            local_relative_path("../models/shion.obj"),
+            materials,
+            "shion-",
+        ),
+        "spongebob": Model.load_obj(
+            local_relative_path("../models/spongebob.obj"),
+            materials,
+            "spongebob-",
+        ),
+        "squidward_house": Model.load_obj(
+            local_relative_path("../models/squidward_house.obj"),
+            materials,
+            "squidhouse-",
+        ),
     }
 
     # Create entities
@@ -108,13 +158,62 @@ def main():
             glfw.KEY_1,
             "monster",
             models["monster"],
-            position=glm.vec3(-1.5, -0.97, 7.6),
+            position=glm.vec3(-1.5, 0, 7.6),
             scale=glm.vec3(0.5),
             log_position=True,
         ),
         "skybox": Skybox(models["skybox"]),
-        "map": Entity(models["burgerpiz"], position=glm.vec3(0, -1, 0)),
-        "okuufumo": OkuuFumo(models["okuu_fumo"], position=glm.vec3(3.5, -0.15, 15)),
+        "map": Entity(models["burgerpiz"], position=glm.vec3(0, -0.02, 0)),
+        "okuufumo": OkuuFumo(models["okuu_fumo"], position=glm.vec3(3.5, 0.85, 15)),
+        "boatmobile": SelectableEntity(
+            glfw.KEY_2,
+            "boatmobile",
+            models["boatmobile"],
+            position=glm.vec3(2, 0.4, 50),
+            angle_y=-90.0,
+            log_position=True,
+        ),
+        "krabbypatty": SelectableEntity(
+            glfw.KEY_3,
+            "krabbypatty",
+            models["krabbypatty"],
+            position=glm.vec3(1.5, 6.8, 23),
+            scale=glm.vec3(1.2),
+            log_position=True,
+        ),
+        "shion": SelectableEntity(
+            glfw.KEY_4,
+            "shion",
+            models["shion"],
+            position=glm.vec3(2.5, 1.35, 11),
+            scale=glm.vec3(0.1),
+            angle_y=-90.0,
+            log_position=True,
+        ),
+        "spongebob": SelectableEntity(
+            glfw.KEY_5,
+            "spongebob",
+            models["spongebob"],
+            position=glm.vec3(2, 1, 4.94),
+            scale=glm.vec3(1.66),
+            angle_y=90,
+            log_position=True,
+        ),
+        "squidward_house": SelectableEntity(
+            glfw.KEY_6,
+            "squidward_house",
+            models["squidward_house"],
+            position=glm.vec3(-11, 0, 43),
+            scale=glm.vec3(1.8),
+            log_position=True,
+        ),
+        "okuufumo-ee": OkuuFumo(
+            models["okuu_fumo"],
+            position=glm.vec3(-11, 2, 43),
+            rotation_speed=3600,
+            scale=glm.vec3(4),
+            handle_events=False,
+        ),
     }
 
     # Load buffers

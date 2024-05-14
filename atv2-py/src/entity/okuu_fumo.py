@@ -20,6 +20,7 @@ class OkuuFumo(Entity):
         angle_y: float = 0.0,
         angle_z: float = 0.0,
         rotation_speed: float = 180.0,
+        handle_events: bool = True,
     ):
         super().__init__(
             model,
@@ -31,11 +32,16 @@ class OkuuFumo(Entity):
         self.angle_y = angle_y
         self.angle_z = angle_z
         self.scale = scale
+        self.handle_events = handle_events
 
     def update(self, dt: float, camera: Camera):
         self.angle_y += self.rotation_speed * dt
+        self.angle_y %= 360
 
     def key_handler(self) -> Optional[Callable[[Any, int, int, int, int], None]]:
+        if not self.handle_events:
+            return None
+
         def handler(win, key, scancode, action, mods):
             if key == glfw.KEY_LEFT and action == glfw.PRESS:
                 self.rotation_speed += -90.0

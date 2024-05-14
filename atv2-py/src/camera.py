@@ -4,7 +4,7 @@ import glm
 import glfw
 import numpy as np
 
-Y_CLAMP = 0.5, 40.0
+Y_CLAMP = 1.5, 40.0
 X_CLAMP = -125.0, 140.0
 Z_CLAMP = -120.0, 180.0
 
