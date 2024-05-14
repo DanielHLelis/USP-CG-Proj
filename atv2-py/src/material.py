@@ -30,6 +30,18 @@ class Material:
         else:
             self.color = glm.vec4(1.0, 1.0, 1.0, 1.0) if color is None else color
 
+    @property
+    def texture_filter(self) -> glm.vec4:
+        if self.texture_path is None:
+            return glm.vec4(0.0, 0.0, 0.0, 0.0)
+        else:
+            return glm.vec4(
+                1.0,
+                1.0,
+                1.0,
+                1.0,
+            )
+
     @staticmethod
     def from_texture(shader: Shader, texture_path: str) -> "Material":
         """Loads a material from a shader and texture path"""

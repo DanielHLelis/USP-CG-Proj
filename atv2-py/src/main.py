@@ -1,17 +1,16 @@
 import os
-from typing import List, Dict
+from typing import Any, List, Dict
 
 import glfw
 import glm
 
 from camera import Camera
 from renderer import Renderer
-from window import init_window, setup_events, closer_handler
+from window import KeyHandler, init_window, setup_events, closer_handler
 from material import Material
 from shader import Shader
 from model import Buffers, Model
-from entity import Entity
-from entity.skybox import Skybox
+from entity import Entity, Skybox, OkuuFumo
 
 
 def local_relative_path(path: str) -> str:
@@ -25,13 +24,31 @@ OTHER_VERTEX_SHADER_FILE = local_relative_path("../shaders/alt.vert")
 OTHER_FRAGMENT_SHADER_FILE = local_relative_path("../shaders/alt.frag")
 
 
+def debug_camera_handler(
+    camera: Camera,
+) -> KeyHandler:
+    def handler(
+        win: Any,
+        key: int,
+        scancode: int,
+        action: int,
+        mods: int,
+    ) -> None:
+        if key == glfw.KEY_Z and action == glfw.PRESS:
+            print(f"Camera position: {camera.position}")
+
+    return handler
+
+
 def main():
     # Create the renderer
     renderer = Renderer()
 
     # Create the camera
     camera = Camera()
-    camera.position = glm.vec3(10, 1, 0)
+    # Direct the camera to the main building
+    camera.yaw = 90.0
+    camera.position = glm.vec3(50, 0, 0)
 
     # Configure window
     win = init_window("Eldrich Horrors Beyond Your Comprehension :D", 1280, 720)
@@ -63,6 +80,11 @@ def main():
             local_relative_path("../models/burgerpiz/burgerpiz.mtl"),
             "burgerpiz-",
         ),
+        **Material.load_mtllib(
+            main_shader,
+            local_relative_path("../models/okuu_fumo.mtl"),
+            "okuufumo-",
+        ),
     }
 
     # Load all models
@@ -87,6 +109,11 @@ def main():
             materials,
             "burgerpiz-",
         ),
+        "okuu_fumo": Model.load_obj(
+            local_relative_path("../models/okuu_fumo.obj"),
+            materials,
+            "okuufumo-",
+        ),
     }
 
     # Load all textures
@@ -94,7 +121,8 @@ def main():
         Entity(models["box"]),
         Entity(models["monster"], position=glm.vec3(0, 0, 4)),
         Skybox(models["skybox"]),
-        Entity(models["burgerpiz"], position=glm.vec3(0, 0, 0)),
+        Entity(models["burgerpiz"], position=glm.vec3(0, -1, 0)),
+        OkuuFumo(models["okuu_fumo"], position=glm.vec3(15, -0.15, -3.5)),
     ]
 
     # Load buffers
@@ -108,7 +136,13 @@ def main():
     # Setup events
     setup_events(
         win,
-        key_handlers=[closer_handler, renderer.key_handler, camera.key_handler],
+        entities,
+        key_handlers=[
+            closer_handler,
+            renderer.key_handler,
+            camera.key_handler,
+            debug_camera_handler(camera),
+        ],
         cursor_handlers=[camera.cursor_handler],
     )
 

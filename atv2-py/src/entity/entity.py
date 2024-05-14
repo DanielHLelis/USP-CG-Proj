@@ -35,7 +35,7 @@ class Entity:
         self.visible = visible
         self.draw_mode = draw_mode
 
-    def update(self, dt: int, camera: Camera):
+    def update(self, dt: float, camera: Camera):
         # By default, do nothing
         pass
 

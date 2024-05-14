@@ -57,16 +57,11 @@ class Renderer:
             self.polygon_mode = not self.polygon_mode
 
     def init(self):
-        """Initializes the renderer stage"""
-        gl.glEnable(gl.GL_DEPTH_TEST)
+        """Initializes the render stage"""
         gl.glEnable(gl.GL_BLEND)
-        # TODO: check alternatives
+        gl.glEnable(gl.GL_DEPTH_TEST)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
-        # gl.glBlendFunc(gl.GL_ONE, gl.GL_ONE_MINUS_SRC_ALPHA)
-        # gl.glBlendEquationSeparate(gl.GL_FUNC_ADD, gl.GL_FUNC_ADD)
-        # gl.glBlendFuncSeparate(
-        #     gl.GL_ONE, gl.GL_ONE_MINUS_SRC_ALPHA, gl.GL_ONE, gl.GL_ONE_MINUS_SRC_ALPHA
-        # )
+        gl.glDepthMask(gl.GL_TRUE)
 
     def pre_render(self) -> None:
         """Clears the buffer and prepares the pre-render"""
@@ -74,7 +69,7 @@ class Renderer:
         gl.glClear(
             cast(int, gl.GL_COLOR_BUFFER_BIT) | cast(int, gl.GL_DEPTH_BUFFER_BIT)
         )
-        gl.glClearColor(0, 0, 0, 1.0)
+        gl.glClearColor(0, 0, 0, 0)
 
         # Set polygon mode
         if self.polygon_mode:
@@ -113,6 +108,9 @@ class Renderer:
             self.setup_camera(material.shader, camera)
             gl.glUniformMatrix4fv(material.shader.model_loc, 1, gl.GL_TRUE, mat)
             gl.glUniform4fv(material.shader.color_loc, 1, np.array(material.color))
+            gl.glUniform4fv(
+                material.shader.texture_filter_loc, 1, np.array(material.texture_filter)
+            )
 
             # Set texture
             gl.glBindTexture(

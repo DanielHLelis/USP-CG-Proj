@@ -4,6 +4,10 @@ import glm
 import glfw
 import numpy as np
 
+Y_CLAMP = 0.0, 40.0
+X_CLAMP = -125.0, 140.0
+Z_CLAMP = -120.0, 180.0
+
 
 class Camera:
     position: glm.vec3
@@ -173,11 +177,9 @@ class Camera:
                         self.position -= self.up * dt * self._movement_speed
 
         # Clamp position
-        if self.position.y < 0.0:
-            self.position.y = 0.0
-
-        if self.position.y > 100.0:
-            self.position.y = 100.0
+        self.position.y = np.clip(self.position.y, *Y_CLAMP)
+        self.position.x = np.clip(self.position.x, *X_CLAMP)
+        self.position.z = np.clip(self.position.z, *Z_CLAMP)
 
     def update(self, win, program, dt: float):
         self._update_aspect_ratio(win)
