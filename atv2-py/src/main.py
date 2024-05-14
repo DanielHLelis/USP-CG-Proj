@@ -61,7 +61,7 @@ def main():
     materials: Dict[str, Material] = {
         "monster-default": Material.from_texture(
             main_shader,
-            local_relative_path("../../examples/monstro/monstro.jpg"),
+            local_relative_path("../textures/monstro.jpg"),
         ),
         **Material.load_mtllib(
             main_shader, local_relative_path("../models/skybox.mtl"), "sb"
@@ -105,8 +105,9 @@ def main():
 
     # Load all models
     models: Dict[str, Model] = {
+        # Monstro, my beloved
         "monster": Model.load_obj(
-            local_relative_path("../../examples/monstro/monstro.obj"),
+            local_relative_path("../models/monstro.obj"),
             materials,
             "monster-",
         ),
