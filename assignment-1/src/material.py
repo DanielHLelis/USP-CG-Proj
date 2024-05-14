@@ -3,7 +3,7 @@
 # D. H. Lelis - 12543822
 # Samuel Figueiredo Veronez - 12542626
 
-from typing import Optional, Iterable
+from typing import Optional, Iterable, Tuple, cast
 
 from glfw import os
 import glm
@@ -75,7 +75,7 @@ class Material:
                 d = 1.0
                 if "d" in material:
                     d = float(material["d"])
-                color = glm.vec4(*material["Kd"], d)
+                color = glm.vec4(cast(Tuple[float], material["Kd"]), d)  # type: ignore
 
             parsed_materials[prefix + material_name] = Material(
                 shader, texture_path, color
