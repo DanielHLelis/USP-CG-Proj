@@ -15,6 +15,7 @@ def init_window(
     height: int,
     resizable=False,
 ) -> Any:
+    """Initializes window with given title and width and height"""
     glfw.init()
     glfw.window_hint(glfw.CONTEXT_VERSION_MAJOR, 4)
     glfw.window_hint(glfw.CONTEXT_VERSION_MINOR, 1)
@@ -44,6 +45,7 @@ def setup_events(
     key_handlers: List[KeyHandler] = [],
     cursor_handlers: List[CursorHandler] = [],
 ):
+    """Sets up the event listener for entity events"""
     # Local copy of the handlers
     local_key_handlers = [*key_handlers]
     local_cursor_handlers = [*cursor_handlers]
@@ -77,6 +79,7 @@ def setup_events(
 
 
 def closer_handler(win: Any, key: int, scancode: int, action: int, mods: int) -> None:
+    """Handler to close the window"""
     # Exit handler (ESC)
     if key == glfw.KEY_ESCAPE and action == glfw.PRESS:
         glfw.set_window_should_close(win, True)

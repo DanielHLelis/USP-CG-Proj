@@ -8,7 +8,6 @@ from PIL import Image
 from shader import Shader
 from wavefront import load_mtllib
 
-
 class Material:
     shader: Shader
     texture_id: int
@@ -33,6 +32,7 @@ class Material:
 
     @staticmethod
     def from_texture(shader: Shader, texture_path: str) -> "Material":
+        """Loads a material from a shader and texture path"""
         if not os.path.isfile(texture_path):
             raise FileNotFoundError(f"Texture file {texture_path} not found")
 
@@ -67,10 +67,12 @@ class Material:
 
     @staticmethod
     def setup_all(materials: Iterable["Material"]) -> None:
+        """Sets up all materials"""
         for material in materials:
             material.setup_texture()
 
     def setup_texture(self) -> None:
+        """Sets up a texture"""
         # Skip if there is no texture
         if self.texture_path is None:
             return

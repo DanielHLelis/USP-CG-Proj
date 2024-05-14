@@ -19,7 +19,6 @@ class Renderer:
         self.polygon_mode = polygon_mode
 
     def _model_matrix(self, entity: Entity) -> np.ndarray:
-
         rad_angle = np.radians(entity.angle)
 
         mat = glm.mat4(1.0)
@@ -53,10 +52,12 @@ class Renderer:
         action: int,
         mods: int,
     ) -> None:
+        """Handles the keyboard event to enter and exit the polygon mode"""
         if key == glfw.KEY_P and action == glfw.PRESS:
             self.polygon_mode = not self.polygon_mode
 
     def init(self):
+        """Initializes the renderer stage"""
         gl.glEnable(gl.GL_DEPTH_TEST)
         gl.glEnable(gl.GL_BLEND)
         # TODO: check alternatives
@@ -68,6 +69,7 @@ class Renderer:
         # )
 
     def pre_render(self) -> None:
+        """Clears the buffer and prepares the pre-render"""
         # Clean the screen
         gl.glClear(
             cast(int, gl.GL_COLOR_BUFFER_BIT) | cast(int, gl.GL_DEPTH_BUFFER_BIT)
@@ -81,6 +83,7 @@ class Renderer:
             gl.glPolygonMode(gl.GL_FRONT_AND_BACK, gl.GL_FILL)
 
     def setup_camera(self, shader: Shader, camera: Camera):
+        """Sets up the camera"""
         view = self._view_matrix(camera)
         projection = self._projection_matrix(camera)
 
@@ -88,6 +91,7 @@ class Renderer:
         gl.glUniformMatrix4fv(shader.projection_loc, 1, gl.GL_TRUE, projection)
 
     def draw_entity(self, entity: Entity, camera: Camera) -> None:
+        """Draws an entity based on it's components and the camera's attributes"""
         model = entity.model
 
         mat = self._model_matrix(entity)

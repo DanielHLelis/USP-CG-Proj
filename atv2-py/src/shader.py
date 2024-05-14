@@ -28,6 +28,7 @@ class Shader:
 
     @staticmethod
     def load_from_files(vertex_file: str, fragment_file: str) -> "Shader":
+        """Loads a shader from a .vert and .frag file"""
         with open(vertex_file, "r") as f:
             vertex_shader = f.read()
         with open(fragment_file, "r") as f:

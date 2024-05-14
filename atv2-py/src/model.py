@@ -86,6 +86,7 @@ class Buffers:
         self.texture_map_buffer = texture_map_buffer
 
     def bind(self, shader: Shader):
+        """Associates a model with a shader"""
         gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vertex_buffer)
         loc = gl.glGetAttribLocation(shader.program_id, "position")
         gl.glEnableVertexAttribArray(loc)
@@ -101,6 +102,7 @@ class Buffers:
 
     @staticmethod
     def setup_buffers(models: Iterable[Model] = []) -> "Buffers":
+        """Sets up the buffers"""
         # Create buffer slot
         vertex_buffer, texture_map_buffer = cast(List[int], gl.glGenBuffers(2))
 

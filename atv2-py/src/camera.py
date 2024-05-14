@@ -89,6 +89,7 @@ class Camera:
         self.aspect_ratio = w / h
 
     def _update_speed_and_fov(self, dt: float):
+        """Changes the speed and fov of the camera to reflect its movement"""
         if glfw.KEY_LEFT_SHIFT in self._pressed_keys:
             self._movement_speed = np.clip(
                 self._movement_speed
