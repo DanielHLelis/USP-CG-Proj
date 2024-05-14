@@ -1,3 +1,8 @@
+# CG 2024.1 - Assignment 1
+#
+# D. H. Lelis - 12543822
+# Samuel Figueiredo Veronez - 12542626
+
 from typing import Optional, Iterable
 
 from glfw import os
@@ -7,6 +12,7 @@ from PIL import Image
 
 from shader import Shader
 from wavefront import load_mtllib
+
 
 class Material:
     shader: Shader

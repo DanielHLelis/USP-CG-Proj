@@ -1,3 +1,8 @@
+# CG 2024.1 - Assignment 1
+#
+# D. H. Lelis - 12543822
+# Samuel Figueiredo Veronez - 12542626
+
 from typing import Optional, Callable, Any
 
 import OpenGL.GL as gl
@@ -23,9 +28,9 @@ class Entity:
         model: Model,
         position: glm.vec3 = glm.vec3(0.0, 0.0, 0.0),
         scale: glm.vec3 = glm.vec3(1.0, 1.0, 1.0),
-        angle_x: float = 0, # pitch 
-        angle_y: float = 0, # yaw 
-        angle_z: float = 0, # roll 
+        angle_x: float = 0,  # pitch
+        angle_y: float = 0,  # yaw
+        angle_z: float = 0,  # roll
         visible: bool = True,
         draw_mode: int = gl.GL_TRIANGLES,
     ):
@@ -53,12 +58,11 @@ class Entity:
     @property
     def pitch(self) -> float:
         return self.angle_x
-    
+
     @property
     def yaw(self) -> float:
         return self.angle_y
-    
+
     @property
     def roll(self) -> float:
         return self.angle_z
-    

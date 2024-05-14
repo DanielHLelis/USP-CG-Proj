@@ -1,3 +1,8 @@
+# CG 2024.1 - Assignment 1
+#
+# D. H. Lelis - 12543822
+# Samuel Figueiredo Veronez - 12542626
+
 from typing import Any, Optional
 
 import glm
