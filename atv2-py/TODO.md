@@ -6,8 +6,8 @@
 - [X] Código pra carregar o wavefront
 - [X] Testar texturas
 - [X] Introduzir a câmera
-- [ ] Controle e limites da câmera
-- [ ] Adicionar Skybox
+- [X] Controle e limites da câmera
+- [X] Adicionar Skybox
 - [X] Generalizar entidade entity para 3d
 - [X] Generalizar carregamento de handlers de eventos (dentro e fora de entity)
 - [ ] Obter modelos (priorizar Mario abrindo o c*,bocchi the rock)
@@ -17,3 +17,8 @@
 - [ ] ~~Zerar o SerasaScore de Maria Adelaide de Freitas~~
 - [ ] Saber se pode usar as matrizes GLM
   - [ ] Mudar tudo?
+
+- [ ] Usar materiais e iluminaç~ao do OpenGL?
+- [ ] Refatorar/documentar shaders
+- [ ] Documentar código
+
