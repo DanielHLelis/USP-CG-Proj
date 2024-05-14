@@ -131,10 +131,20 @@ def main():
     # Main loop
     renderer.init()
     last_render = glfw.get_time()
+    last_fps = last_render
+    frame_count = 0
     while not glfw.window_should_close(win):
         # Keep track of elapsed time
         current_time = glfw.get_time()
         delta_time = current_time - last_render
+
+        if current_time - last_fps >= 1:
+            print(f"FPS: {frame_count}; Frame Time: {(current_time - last_fps) / frame_count * 1000}ms")
+            frame_count = 0
+            last_fps = glfw.get_time()
+        else:
+            frame_count += 1
+
         # Get the events
         glfw.poll_events()
 
