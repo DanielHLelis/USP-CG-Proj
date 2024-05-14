@@ -20,9 +20,6 @@ def local_relative_path(path: str) -> str:
 VERTEX_SHADER_FILE = local_relative_path("../shaders/main.vert")
 FRAGMENT_SHADER_FILE = local_relative_path("../shaders/main.frag")
 
-OTHER_VERTEX_SHADER_FILE = local_relative_path("../shaders/alt.vert")
-OTHER_FRAGMENT_SHADER_FILE = local_relative_path("../shaders/alt.frag")
-
 
 def debug_camera_handler(
     camera: Camera,
@@ -55,19 +52,8 @@ def main():
 
     # Load and compile shaders
     main_shader = Shader.load_from_files(VERTEX_SHADER_FILE, FRAGMENT_SHADER_FILE)
-    alt_shader = Shader.load_from_files(
-        OTHER_VERTEX_SHADER_FILE, OTHER_FRAGMENT_SHADER_FILE
-    )
-    alt_shader.has_texture = False
-
     # Load all materials
     materials: Dict[str, Material] = {
-        "box-Material.002": Material.from_texture(
-            main_shader, local_relative_path("../../examples/caixa/caixa.jpg")
-        ),
-        "box-Material.003": Material(
-            alt_shader,
-        ),
         "monster-default": Material.from_texture(
             main_shader,
             local_relative_path("../../examples/monstro/monstro.jpg"),
@@ -89,11 +75,6 @@ def main():
 
     # Load all models
     models: Dict[str, Model] = {
-        "box": Model.load_obj(
-            local_relative_path("../../examples/caixa/caixa.obj"),
-            materials,
-            "box-",
-        ),
         "monster": Model.load_obj(
             local_relative_path("../../examples/monstro/monstro.obj"),
             materials,
@@ -118,7 +99,6 @@ def main():
 
     # Load all textures
     entities: List[Entity] = [
-        Entity(models["box"]),
         Entity(models["monster"], position=glm.vec3(0, 0, 4)),
         Skybox(models["skybox"]),
         Entity(models["burgerpiz"], position=glm.vec3(0, -1, 0)),
@@ -128,7 +108,6 @@ def main():
     # Load buffers
     buffers = Buffers.setup_buffers(models.values())
     buffers.bind(main_shader)
-    buffers.bind(alt_shader)
 
     # Load textures
     Material.setup_all(materials.values())
