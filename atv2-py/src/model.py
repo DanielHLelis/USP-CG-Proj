@@ -5,7 +5,7 @@ import OpenGL.GL as gl
 
 from shader import Shader
 from material import Material
-from wavefront import load_file
+from wavefront import load_obj
 
 
 class Model:
@@ -54,7 +54,7 @@ class Model:
         materials: Dict[str, Material],
         prefix_materials: str = "",
     ) -> "Model":
-        model = load_file(filepath)
+        model = load_obj(filepath)
         texture_coords = []
         vertices = []
 

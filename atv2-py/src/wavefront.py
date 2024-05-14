@@ -1,7 +1,7 @@
 DEFAULT_MATERIAL = "default"
 
 
-def load_file(filepath: str):
+def load_obj(filepath: str):
     """Loads a Wavefront OBJ file."""
     vertices = []
     texture_coords = []
@@ -50,7 +50,31 @@ def load_file(filepath: str):
     return model
 
 
+def load_mtllib(filepath: str):
+    """Loads a Wavefront material library."""
+    materials = {}
+    material = None
+    for line in open(filepath, "r"):
+        if line.startswith("#"):
+            continue
+        values = line.split()
+        if not values:
+            continue
+        if values[0] == "newmtl":
+            material = {}
+            materials[values[1]] = material
+        if material is None:
+            continue
+        if values[0] == "Kd":
+            material["Kd"] = list(map(float, values[1:]))
+        if values[0] == "map_Kd":
+            material["map_Kd"] = values[1]
+        if values[0] == "d":
+            material["d"] = float(values[1])
+    return materials
+
+
 if __name__ == "__main__":
     model_file = input("Enter the name of the model file: ")
-    model = load_file(model_file)
+    model = load_obj(model_file)
     print("Model: ", model)

@@ -58,6 +58,14 @@ class Renderer:
 
     def init(self):
         gl.glEnable(gl.GL_DEPTH_TEST)
+        gl.glEnable(gl.GL_BLEND)
+        # TODO: check alternatives
+        gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
+        # gl.glBlendFunc(gl.GL_ONE, gl.GL_ONE_MINUS_SRC_ALPHA)
+        # gl.glBlendEquationSeparate(gl.GL_FUNC_ADD, gl.GL_FUNC_ADD)
+        # gl.glBlendFuncSeparate(
+        #     gl.GL_ONE, gl.GL_ONE_MINUS_SRC_ALPHA, gl.GL_ONE, gl.GL_ONE_MINUS_SRC_ALPHA
+        # )
 
     def pre_render(self) -> None:
         # Clean the screen
@@ -100,6 +108,7 @@ class Renderer:
             material.shader.use()
             self.setup_camera(material.shader, camera)
             gl.glUniformMatrix4fv(material.shader.model_loc, 1, gl.GL_TRUE, mat)
+            gl.glUniform4fv(material.shader.color_loc, 1, np.array(material.color))
 
             # Set texture
             gl.glBindTexture(

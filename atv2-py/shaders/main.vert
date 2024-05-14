@@ -2,11 +2,13 @@
 
 in vec3 position;
 in vec2 texture_coord;
+
 out vec2 tex_coord;
 
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+
 
 
 void main() {

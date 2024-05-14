@@ -8,6 +8,7 @@ class Shader:
     model_loc: Any
     view_loc: Any
     projection_loc: Any
+    color_loc: Any
     has_texture: bool
 
     def __init__(
@@ -19,6 +20,7 @@ class Shader:
         self.model_loc = gl.glGetUniformLocation(program_id, "model")
         self.view_loc = gl.glGetUniformLocation(program_id, "view")
         self.projection_loc = gl.glGetUniformLocation(program_id, "projection")
+        self.color_loc = gl.glGetUniformLocation(program_id, "u_color")
         self.has_texture = has_texture
 
     def use(self):

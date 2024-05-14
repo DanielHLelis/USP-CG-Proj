@@ -1,21 +1,35 @@
 from typing import Optional, Iterable
 
 from glfw import os
+import glm
 import OpenGL.GL as gl
 from PIL import Image
 
 from shader import Shader
+from wavefront import load_mtllib
 
 
 class Material:
     shader: Shader
     texture_id: int
     texture_path: Optional[str]
+    color: glm.vec4
 
-    def __init__(self, shader: Shader, texture_path: Optional[str] = None):
+    def __init__(
+        self,
+        shader: Shader,
+        texture_path: Optional[str] = None,
+        color: Optional[glm.vec4] = None,
+    ):
+        assert shader is not None, "Shader must be provided"
+
         self.shader = shader
         self.texture_id = 0
         self.texture_path = texture_path
+        if texture_path is not None:
+            self.color = glm.vec4(0.0, 0.0, 0.0, 0.0)
+        else:
+            self.color = glm.vec4(1.0, 1.0, 1.0, 1.0) if color is None else color
 
     @staticmethod
     def from_texture(shader: Shader, texture_path: str) -> "Material":
@@ -23,6 +37,33 @@ class Material:
             raise FileNotFoundError(f"Texture file {texture_path} not found")
 
         return Material(shader, texture_path)
+
+    @staticmethod
+    def load_mtllib(
+        shader: Shader, filepath: str, prefix: str = ""
+    ) -> dict[str, "Material"]:
+        materials = load_mtllib(filepath)
+        parsed_materials = {}
+        for material_name, material in materials.items():
+            texture_path = None
+            color = None
+            # Check for texture
+            if "map_Kd" in material:
+                texture_path = os.path.realpath(
+                    os.path.join(os.path.dirname(filepath), material["map_Kd"])
+                )
+            # Check for color
+            if "Kd" in material:
+                d = 1.0
+                if "d" in material:
+                    d = float(material["d"])
+                color = glm.vec4(*material["Kd"], d)
+
+            parsed_materials[prefix + material_name] = Material(
+                shader, texture_path, color
+            )
+
+        return parsed_materials
 
     @staticmethod
     def setup_all(materials: Iterable["Material"]) -> None:

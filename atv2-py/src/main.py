@@ -55,9 +55,13 @@ def main():
             main_shader,
             local_relative_path("../../examples/monstro/monstro.jpg"),
         ),
-        "skybox": Material.from_texture(
+        **Material.load_mtllib(
+            main_shader, local_relative_path("../models/skybox.mtl"), "sb"
+        ),
+        **Material.load_mtllib(
             main_shader,
-            local_relative_path("../textures/skybox.jpg"),
+            local_relative_path("../models/burgerpiz/burgerpiz.mtl"),
+            "burgerpiz-",
         ),
     }
 
@@ -76,7 +80,12 @@ def main():
         "skybox": Model.load_obj(
             local_relative_path("../models/skybox.obj"),
             materials,
-            "",
+            "sb",
+        ),
+        "burgerpiz": Model.load_obj(
+            local_relative_path("../models/burgerpiz/burgerpiz.obj"),
+            materials,
+            "burgerpiz-",
         ),
     }
 
@@ -85,6 +94,7 @@ def main():
         Entity(models["box"]),
         Entity(models["monster"], position=glm.vec3(0, 0, 4)),
         Skybox(models["skybox"]),
+        Entity(models["burgerpiz"], position=glm.vec3(0, 0, 0)),
     ]
 
     # Load buffers
