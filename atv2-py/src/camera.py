@@ -44,7 +44,7 @@ class Camera:
         up=glm.vec3(0.0, 1.0, 0.0),
         aspect_ratio=1.0,
         near=0.1,
-        far=100.0,
+        far=5100.0,
         sensitivity_x=0.05,
         sensitivity_y=0.05,
         move_xyz=True,
@@ -171,11 +171,16 @@ class Camera:
                     case glfw.KEY_LEFT_CONTROL:
                         self.position -= self.up * dt * self._movement_speed
 
+        # Clamp position
+        if self.position.y < 0.0:
+            self.position.y = 0.0
+
+        if self.position.y > 100.0:
+            self.position.y = 100.0
+
     def update(self, win, program, dt: float):
         self._update_aspect_ratio(win)
         self._update_position(dt)
-
-        pass
 
     def cursor_handler(self, win: Any, x: float, y: float, rel_x: float, rel_y: float):
         if self._previous_x is None or self._previous_y is None:

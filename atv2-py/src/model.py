@@ -49,7 +49,10 @@ class Model:
 
     @classmethod
     def load_obj(
-        cls, filepath: str, materials: Dict[str, Material], prefix_materials: str = ""
+        cls,
+        filepath: str,
+        materials: Dict[str, Material],
+        prefix_materials: str = "",
     ) -> "Model":
         model = load_file(filepath)
         texture_coords = []

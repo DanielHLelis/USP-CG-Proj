@@ -11,6 +11,7 @@ from material import Material
 from shader import Shader
 from model import Buffers, Model
 from entity import Entity
+from entity.skybox import Skybox
 
 
 def local_relative_path(path: str) -> str:
@@ -54,6 +55,10 @@ def main():
             main_shader,
             local_relative_path("../../examples/monstro/monstro.jpg"),
         ),
+        "skybox": Material.from_texture(
+            main_shader,
+            local_relative_path("../textures/skybox.jpg"),
+        ),
     }
 
     # Load all models
@@ -68,12 +73,18 @@ def main():
             materials,
             "monster-",
         ),
+        "skybox": Model.load_obj(
+            local_relative_path("../models/skybox.obj"),
+            materials,
+            "",
+        ),
     }
 
     # Load all textures
     entities: List[Entity] = [
         Entity(models["box"]),
         Entity(models["monster"], position=glm.vec3(0, 0, 4)),
+        Skybox(models["skybox"]),
     ]
 
     # Load buffers
@@ -104,12 +115,12 @@ def main():
         # Get the events
         glfw.poll_events()
 
-        # Update elements
-        for entity in entities:
-            entity.update(delta_time)
-
         # Update the camera
         camera.update(win, main_shader, delta_time)
+
+        # Update elements
+        for entity in entities:
+            entity.update(delta_time, camera)
 
         # Clear the screen
         renderer.pre_render()

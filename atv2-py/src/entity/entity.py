@@ -3,6 +3,8 @@ from typing import Optional, Callable, Any
 import OpenGL.GL as gl
 import glm
 
+
+from camera import Camera
 from model import Model
 
 
@@ -33,7 +35,7 @@ class Entity:
         self.visible = visible
         self.draw_mode = draw_mode
 
-    def update(self, dt: int):
+    def update(self, dt: int, camera: Camera):
         # By default, do nothing
         pass
 
