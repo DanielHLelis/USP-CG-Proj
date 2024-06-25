@@ -12,15 +12,17 @@ uniform vec3 u_lightDecay[MAX_LIGHTS];
 uniform float u_lightIntensity[MAX_LIGHTS];
 
 // lighting parameters
-uniform float u_ka;
-uniform float u_kd;
-uniform float u_ks;
+uniform vec3 u_ka;
+uniform vec3 u_kd;
+uniform vec3 u_ks;
 uniform float u_ns;
 
 // camera position
 uniform vec3 u_viewPos;
 
+
 // vertex data
+uniform vec4 u_color;
 in vec2 out_texture;
 in vec3 out_normal;
 in vec3 out_fragPos;
@@ -50,7 +52,7 @@ void main() {
     result += (diffuse + specular);
   }
 
-  vec4 textureColor = texture(samplerTexture, out_texture);
-
-  fragColor = vec4(ambient + result, 1.0) * textureColor;
+  vec4 textureColor = texture(samplerTexture, out_texture) + u_color;
+  if (textureColor.a < 0.5) discard;
+  fragColor = vec4(ambient+ result, 1.0) * textureColor;
 }

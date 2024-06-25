@@ -12,6 +12,7 @@ import glm
 from camera import Camera
 from renderer import Renderer
 from window import KeyHandler, init_window, setup_events, closer_handler
+from light_source import LightSource
 from material import Material
 from shader import Shader
 from model import Buffers, Model
@@ -24,8 +25,8 @@ def local_relative_path(path: str) -> str:
 
 LOG_FPS = True
 
-VERTEX_SHADER_FILE = local_relative_path("../shaders/main.vert")
-FRAGMENT_SHADER_FILE = local_relative_path("../shaders/main.frag")
+VERTEX_SHADER_FILE = local_relative_path("../shaders/phong.vert")
+FRAGMENT_SHADER_FILE = local_relative_path("../shaders/phong.frag")
 
 
 def debug_camera_handler(
@@ -47,8 +48,25 @@ def debug_camera_handler(
 
 
 def main():
+
+    # Configure window
+    win = init_window("Eldrich Horrors Beyond Your Comprehension :D", 1280, 720)
+
+    # Load and compile shaders
+    main_shader = Shader.load_from_files(VERTEX_SHADER_FILE, FRAGMENT_SHADER_FILE)
+
     # Create the renderer
     renderer = Renderer()
+    # TODO find a best place for ambient colors
+    renderer.ambient_color = (1.0, 1.0, 0.8, 1.0)
+    renderer.ambient_intensity = 1
+
+    # Todo LightSources
+    light_sources = [
+        LightSource(glm.vec3(2.0, 8.7, 31.7),
+                    glm.vec3(1.0, 1.0, 1.0),
+                    1.0,
+        )]
 
     # Create the camera
     camera = Camera(
@@ -57,13 +75,13 @@ def main():
         position=glm.vec3(12, 1.5, 55),
     )
 
-    # Configure window
-    win = init_window("Eldrich Horrors Beyond Your Comprehension :D", 1280, 720)
-
-    # Load and compile shaders
-    main_shader = Shader.load_from_files(VERTEX_SHADER_FILE, FRAGMENT_SHADER_FILE)
     # Load all materials
     materials: Dict[str, Material] = {
+        **Material.load_mtllib(
+            main_shader,
+            local_relative_path("../models/12lados.mtl"),
+            "god"
+        ),
         "monster-default": Material.from_texture(
             main_shader,
             local_relative_path("../textures/monstro.jpg"),
@@ -115,6 +133,12 @@ def main():
 
     # Load all models
     models: Dict[str, Model] = {
+        **Model.load_obj(
+            local_relative_path("../models/12lados.obj"),
+            materials,
+            "god",
+            "god"
+        ),
         # Monstro, my beloved
         **Model.load_obj(
             local_relative_path("../models/monstro.obj"),
@@ -187,6 +211,11 @@ def main():
 
     # Create entities
     entities: Dict[str, Entity] = {
+        "god": Entity(
+            models["god"],
+            position=glm.vec3(2,2,2),
+            scale=glm.vec3(9),
+        ),
         "monster": SelectableEntity(
             glfw.KEY_1,
             "monster",
@@ -311,7 +340,7 @@ def main():
 
         # Render elements
         for entity in entities.values():
-            renderer.draw_entity(entity, camera)
+            renderer.draw_entity(entity, camera, light_sources)
 
         glfw.swap_buffers(win)
         last_render = current_time

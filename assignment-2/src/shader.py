@@ -25,6 +25,8 @@ class Shader:
     light_intensities_loc: Any
     lightDecay_loc: Any
 
+    view_positions_loc: Any
+
     ka_loc: Any
     kd_loc: Any
     ks_loc: Any
@@ -45,24 +47,25 @@ class Shader:
         )
         self.has_texture = has_texture
 
-        # self.light_count_loc = gl.glGetUniformLocation(program_id, "u_lightCount")
-        # self.ambient_color_loc = gl.glGetUniformLocation(program_id, "u_ambientColor")
-        # self.ambient_intensity_loc = gl.glGetUniformLocation(
-        #     program_id, "u_ambientIntensity"
-        # )
-        # self.light_positions_loc = gl.glGetUniformLocation(program_id, "u_lightPos")
-        # self.light_colors_loc = gl.glGetUniformLocation(program_id, "u_lightColors")
-        # self.light_intensities_loc = gl.glGetUniformLocation(
-        #     program_id, "u_lightIntensity"
-        # )
-        # self.lightDecay_loc = gl.glGetUniformLocation(program_id, "u_lightDecay")
-        #
-        # self.ka_loc = gl.glGetUniformLocation(program_id, "u_ka")
-        # self.kd_loc = gl.glGetUniformLocation(program_id, "u_kd")
-        # self.ks_loc = gl.glGetUniformLocation(program_id, "u_ks")
-        # self.ns_loc = gl.glGetUniformLocation(program_id, "u_ns")
-        #
-        # self.view_pos_loc = gl.glGetUniformLocation(program_id, "u_viewPos")
+        # Ambient Lighting
+        self.ambient_color_loc = gl.glGetUniformLocation(program_id, "u_ambientColor")
+        self.ambient_intensity_loc = gl.glGetUniformLocation(program_id, "u_ambientIntensity")
+        self.ka_loc = gl.glGetUniformLocation(program_id, "u_ka")
+
+        # Light Sources
+        self.light_count_loc = gl.glGetUniformLocation(program_id, "u_lightCount")
+        self.light_positions_loc = gl.glGetUniformLocation(program_id, "u_lightPos")
+        self.light_colors_loc = gl.glGetUniformLocation(program_id, "u_lightColors")
+        self.light_intensities_loc = gl.glGetUniformLocation(program_id, "u_lightIntensity")
+        self.lightDecay_loc = gl.glGetUniformLocation(program_id, "u_lightDecay")
+
+        # Diffuse && Specular
+        self.kd_loc = gl.glGetUniformLocation(program_id, "u_kd")
+        self.ks_loc = gl.glGetUniformLocation(program_id, "u_ks")
+        self.ns_loc = gl.glGetUniformLocation(program_id, "u_ns")
+
+        # Camera Position
+        self.view_pos_loc = gl.glGetUniformLocation(program_id, "u_viewPos")
 
     def use(self):
         gl.glUseProgram(self.program_id)

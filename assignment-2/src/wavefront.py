@@ -101,6 +101,22 @@ def load_mtllib(filepath: str):
             material["map_Kd"] = values[1]
         if values[0] == "d":
             material["d"] = float(values[1])
+
+        if values[0] == "Ka":
+            material["Ka"] = list(map(float, values[1:]))
+
+        if values[0] == "Ks":
+            material["Ks"] = list(map(float, values[1:]))
+
+        if values[0] == "Ke":
+            material["Ke"] = list(map(float, values[1:]))
+
+        if values[0] == "Ni":
+            material["Ni"] = float(values[1])
+
+        if values[0] == "illum":
+            material["illum"] = float(values[1])
+
     return materials
 
 

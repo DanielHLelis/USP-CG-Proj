@@ -5,6 +5,7 @@
 
 from typing import Optional, Iterable, Tuple, cast
 
+import numpy as np
 from glfw import os
 import glm
 import OpenGL.GL as gl
@@ -19,22 +20,37 @@ class Material:
     texture_id: int
     texture_path: Optional[str]
     color: glm.vec4
+    ka: np.array
+    kd: np.array
+    ks: np.array
 
     def __init__(
         self,
         shader: Shader,
         texture_path: Optional[str] = None,
         color: Optional[glm.vec4] = None,
+        ka: Optional[np.ndarray] = None,
+        kd: Optional[np.ndarray] = None,
+        ks: Optional[np.ndarray] = None,
+        ns: Optional[float] = 0
     ):
         assert shader is not None, "Shader must be provided"
 
         self.shader = shader
         self.texture_id = 0
         self.texture_path = texture_path
+
         if texture_path is not None:
             self.color = glm.vec4(0.0, 0.0, 0.0, 0.0)
         else:
             self.color = glm.vec4(1.0, 1.0, 1.0, 1.0) if color is None else color
+
+        # Lighting coefs
+        self.ka = ka if ka is not None else np.array([1.0, 1.0, 1.0])
+        # TODO get help with kd_map
+        self.kd = kd if kd is not None else np.array([1.0, 1.0, 1.0])
+        self.ks = kd if kd is not None else np.array([1.0, 1.0, 1.0])
+        self.ns = ns if ns is not None else 0
 
     @property
     def texture_filter(self) -> glm.vec4:
@@ -65,11 +81,13 @@ class Material:
         for material_name, material in materials.items():
             texture_path = None
             color = None
+
             # Check for texture
             if "map_Kd" in material:
                 texture_path = os.path.realpath(
                     os.path.join(os.path.dirname(filepath), material["map_Kd"])
                 )
+
             # Check for color
             if "Kd" in material:
                 d = 1.0
@@ -77,8 +95,13 @@ class Material:
                     d = float(material["d"])
                 color = glm.vec4(cast(Tuple[float], material["Kd"]), d)  # type: ignore
 
+            ka = material["Ka"] if "Ka" in material else None
+            kd = material["Kd"] if "Kd" in material else None
+            ks = material["Ks"] if "Ks" in material else None
+            ns = material["Ni"] if "Ni" in material else None
+
             parsed_materials[prefix + material_name] = Material(
-                shader, texture_path, color
+                shader, texture_path, color, ka, kd, ks, ns
             )
 
         return parsed_materials
