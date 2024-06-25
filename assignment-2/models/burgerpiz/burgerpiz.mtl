@@ -1,6 +1,16 @@
 # Blender 4.1.1 MTL File: 'None'
 # www.blender.org
 
+newmtl air_conditioning
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/air-conditioning.png
+map_d ../../textures/burgerpiz/air-conditioning.png
+
 newmtl Armchair.001
 Ns 0.000000
 Ka 1.000000 1.000000 1.000000

@@ -73,6 +73,11 @@ def main():
         ),
         **Material.load_mtllib(
             main_shader,
+            local_relative_path("../models/burgerpiz/inner.mtl"),
+            "burgerpiz-inner-",
+        ),
+        **Material.load_mtllib(
+            main_shader,
             local_relative_path("../models/burgerpiz/burgerpiz.mtl"),
             "burgerpiz-",
         ),
@@ -123,12 +128,24 @@ def main():
             "sb",
             "skybox",
         ),
+        # **Model.load_obj(
+        #     local_relative_path("../models/burgerpiz/burgerpiz.obj"),
+        #     materials,
+        #     "burgerpiz-",
+        #     "burgerpiz_",
+        #     split_objects=False,  # Opted to keep the model whole due to performance impact
+        # ),
         **Model.load_obj(
-            local_relative_path("../models/burgerpiz/burgerpiz.obj"),
+            local_relative_path("../models/burgerpiz/inner.obj"),
+            materials,
+            "burgerpiz-inner-",
+            "burgerpiz_inner_",
+        ),
+        **Model.load_obj(
+            local_relative_path("../models/burgerpiz/outer.obj"),
             materials,
             "burgerpiz-",
-            "burgerpiz_",
-            split_objects=False,  # Opted to keep the model whole due to performance impact
+            "burgerpiz_outer_",
         ),
         **Model.load_obj(
             local_relative_path("../models/okuu_fumo.obj"),

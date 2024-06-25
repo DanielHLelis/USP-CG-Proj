@@ -1,0 +1,742 @@
+# Blender 4.1.1 MTL File: 'None'
+# www.blender.org
+
+newmtl Armchair
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Armchair.png
+map_d ../../textures/burgerpiz/Armchair.png
+
+newmtl AsphaltDamaged
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd ../../textures/burgerpiz/AsphaltDamaged.jpeg
+
+newmtl Background
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Background.png
+map_d ../../textures/burgerpiz/Background.png
+
+newmtl Blu
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.064402 0.068013 0.341882
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+
+newmtl BrickPainted
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd ../../textures/burgerpiz/BrickPainted.png
+
+newmtl Building
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd ../../textures/burgerpiz/Building.jpeg
+
+newmtl Building_01
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd ../../textures/burgerpiz/Building_01.jpeg
+
+newmtl Building_02
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd ../../textures/burgerpiz/Building_02.jpeg
+
+newmtl Cash_register
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Cash_register.png
+map_d ../../textures/burgerpiz/Cash_register.png
+
+newmtl Chair
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Chair.png
+map_d ../../textures/burgerpiz/Chair.png
+
+newmtl ColorWhite
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+
+newmtl Door
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd ../../textures/burgerpiz/Door.png
+
+newmtl Door_01
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Door_01.png
+map_d ../../textures/burgerpiz/Door_01.png
+
+newmtl Door_02
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd ../../textures/burgerpiz/Door_02.jpeg
+
+newmtl Door_03
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd ../../textures/burgerpiz/Door_03.png
+
+newmtl Emissor
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.000000 0.000000 0.000000
+Ke 7.699999 7.699999 7.699999
+Ni 1.500000
+d 1.000000
+illum 1
+
+newmtl Glass
+Ns 1000.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 0.200000
+illum 1
+
+newmtl Grass
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd ../../textures/burgerpiz/Grass.jpeg
+
+newmtl Grill
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Grill.png
+map_d ../../textures/burgerpiz/Grill.png
+
+newmtl Lamppost
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Lamppost.png
+map_Ke ../../textures/burgerpiz/Lamppost_Emissor.png
+map_d ../../textures/burgerpiz/Lamppost.png
+
+newmtl Light
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Light.png
+map_Ke ../../textures/burgerpiz/Light_Emissor.png
+map_d ../../textures/burgerpiz/Light.png
+
+newmtl Lines
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Lines.png
+map_d ../../textures/burgerpiz/Lines.png
+
+newmtl Marble
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd ../../textures/burgerpiz/Marble.png
+
+newmtl Material.001
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.000000 0.000000 0.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+
+newmtl Material.002
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.000000 0.000000 0.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+
+newmtl Metal
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Metal.png
+map_d ../../textures/burgerpiz/Metal.png
+
+newmtl MetalBare
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd ../../textures/burgerpiz/MetalBare.jpeg
+
+newmtl Metal_01
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd ../../textures/burgerpiz/Metal_01.jpeg
+
+newmtl Mirror
+Ns 1000.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 0.200000
+illum 3
+
+newmtl Office_Ceiling
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd ../../textures/burgerpiz/Office_Ceiling.jpeg
+
+newmtl Orange
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 0.155722 0.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+
+newmtl Paper_dispenser
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Paper_dispenser.png
+map_d ../../textures/burgerpiz/Paper_dispenser.png
+
+newmtl Plants
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Plants.png
+map_d ../../textures/burgerpiz/Plants.png
+
+newmtl Plaster
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Plaster.png
+map_d ../../textures/burgerpiz/Plaster.png
+
+newmtl Plaster_01
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Plaster_01.png
+map_d ../../textures/burgerpiz/Plaster_01.png
+
+newmtl Plaster_02
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Plaster_02.png
+map_d ../../textures/burgerpiz/Plaster_02.png
+
+newmtl Refrijerator_M
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Refrijerator_M.png
+map_d ../../textures/burgerpiz/Refrijerator_M.png
+
+newmtl Resources
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Resources.png
+map_d ../../textures/burgerpiz/Resources.png
+
+newmtl Road
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd ../../textures/burgerpiz/Road.jpeg
+
+newmtl Roof_tiles
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd ../../textures/burgerpiz/Roof_tiles.jpeg
+
+newmtl RooftilesMetal
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd ../../textures/burgerpiz/RooftilesMetal.jpeg
+
+newmtl Shelf_B
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Shelf_B.png
+map_d ../../textures/burgerpiz/Shelf_B.png
+
+newmtl Shelf_C
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Shelf_C.png
+map_d ../../textures/burgerpiz/Shelf_C.png
+
+newmtl Shelf_F
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Shelf_F.png
+map_d ../../textures/burgerpiz/Shelf_F.png
+
+newmtl Shelf_FR
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Shelf_FR.png
+map_d ../../textures/burgerpiz/Shelf_FR.png
+
+newmtl Shelf_fd
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Shelf_fd.png
+map_d ../../textures/burgerpiz/Shelf_fd.png
+
+newmtl Sign
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Sign.png
+map_d ../../textures/burgerpiz/Sign.png
+
+newmtl Soap_dispenser
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Soap_dispenser.png
+map_d ../../textures/burgerpiz/Soap_dispenser.png
+
+newmtl Soda_fountain
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Soda_fountain.png
+map_d ../../textures/burgerpiz/Soda_fountain.png
+
+newmtl Table
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Table.png
+map_d ../../textures/burgerpiz/Table.png
+
+newmtl Terminal
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Terminal.png
+map_d ../../textures/burgerpiz/Terminal.png
+
+newmtl Tiles
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Tiles.png
+map_d ../../textures/burgerpiz/Tiles.png
+
+newmtl TilesPlain
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd ../../textures/burgerpiz/TilesPlain.jpeg
+
+newmtl Toilet
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Toilet.png
+map_d ../../textures/burgerpiz/Toilet.png
+
+newmtl Tree
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Tree.png
+map_d ../../textures/burgerpiz/Tree.png
+
+newmtl Tree_01
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Tree_01.png
+map_d ../../textures/burgerpiz/Tree_01.png
+
+newmtl Tree_02
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Tree_02.png
+map_d ../../textures/burgerpiz/Tree_02.png
+
+newmtl Tree_03
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Tree_03.png
+map_d ../../textures/burgerpiz/Tree_03.png
+
+newmtl Tumbler
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Tumbler.png
+map_d ../../textures/burgerpiz/Tumbler.png
+
+newmtl Ventilation
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd ../../textures/burgerpiz/Ventilation.png
+
+newmtl Wall
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd ../../textures/burgerpiz/Wall.jpeg
+
+newmtl Wall_W
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Wall_W.png
+map_d ../../textures/burgerpiz/Wall_W.png
+
+newmtl Wire
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/Wire.png
+map_d ../../textures/burgerpiz/Wire.png
+
+newmtl Wood
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd ../../textures/burgerpiz/Wood.png
+
+newmtl WoodChips
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd ../../textures/burgerpiz/WoodChips.png
+
+newmtl WoodFloor
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd ../../textures/burgerpiz/WoodFloor.png
+
+newmtl WoodPlanksFloors0
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd ../../textures/burgerpiz/WoodPlanksFloors0.jpeg
+
+newmtl air-conditioning
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/air-conditioning.png
+map_d ../../textures/burgerpiz/air-conditioning.png
+
+newmtl cardboard_boxes
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/cardboard_boxes.png
+map_d ../../textures/burgerpiz/cardboard_boxes.png
+
+newmtl menu_burger
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd ../../textures/burgerpiz/menu_burger.png
+
+newmtl plants_flowers
+Ns 250.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 2
+map_Kd ../../textures/burgerpiz/plants_flowers.png
+map_d ../../textures/burgerpiz/plants_flowers.png
+
+newmtl sidewalk
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/sidewalk.png
+map_d ../../textures/burgerpiz/sidewalk.png
+
+newmtl sidewalk_01
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+illum 1
+map_Kd ../../textures/burgerpiz/sidewalk_01.png
+map_d ../../textures/burgerpiz/sidewalk_01.png
+
+newmtl urinary
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 1
+map_Kd ../../textures/burgerpiz/urinary.png

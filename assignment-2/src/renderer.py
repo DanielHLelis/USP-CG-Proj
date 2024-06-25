@@ -16,12 +16,18 @@ from camera import Camera
 
 class Renderer:
     polygon_mode: bool
+    ambient_color: np.ndarray
+    ambient_intensity: float
 
     def __init__(
         self,
         polygon_mode: bool = False,
+        ambient_color: np.ndarray = np.array([1.0, 1.0, 1.0, 1.0]),
+        ambient_intensity: float = 0.1,
     ) -> None:
         self.polygon_mode = polygon_mode
+        self.ambient_color = ambient_color
+        self.ambient_intensity = ambient_intensity
 
     def _model_matrix(self, entity: Entity) -> np.ndarray:
         # rad_angle = np.radians(entity.angle)
@@ -60,6 +66,14 @@ class Renderer:
         )
         return np.array(projection, dtype=np.float32)
 
+    # def _bootstrap_lighting(self, shader: Shader, camera: Camera):
+    #     gl.glUniform1i(shader.light_count_loc, 1)
+    #     gl.glUniform3fv(shader.ambient_color_loc, 1, self.ambient_color)
+    #     gl.glUniform1f(shader.ambient_intensity_loc, self.ambient_intensity)
+    #     gl.glUniform3fv(
+    #         shader.view_pos_loc, 1, camera.position
+    #     )  # TODO: this looks wrong
+    #
     def key_handler(
         self,
         win: Any,
@@ -122,6 +136,7 @@ class Renderer:
             # Activate the right shader (does this have a big performance impact?)
             material.shader.use()
             self.setup_camera(material.shader, camera)
+            # gl.glUniform1f(material.shader.ka_loc, self.ka)
             gl.glUniformMatrix4fv(material.shader.model_loc, 1, gl.GL_TRUE, mat)
             gl.glUniform4fv(material.shader.color_loc, 1, np.array(material.color))
             gl.glUniform4fv(

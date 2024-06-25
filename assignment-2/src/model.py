@@ -3,7 +3,7 @@
 # D. H. Lelis - 12543822
 # Samuel Figueiredo Veronez - 12542626
 
-from typing import Any, Dict, Iterable, List, cast, Union
+from typing import Any, Dict, Iterable, List, cast, Optional, Union
 
 import numpy as np
 import OpenGL.GL as gl
@@ -13,12 +13,41 @@ from material import Material
 from wavefront import load_obj
 
 
+class LightSource:
+    position: np.ndarray
+    color: np.ndarray
+    decay: np.ndarray
+    intensity: float
+
+    def __init__(
+        self,
+        position: np.ndarray,
+        color: np.ndarray,
+        decay: np.ndarray,
+        intensity: float,
+    ):
+        assert len(position) == 3, "Position must have 3 components"
+        assert len(color) == 3, "Color must have 3 components"
+        assert len(decay) == 3, "Decay must have 3 components"
+        assert 0 <= intensity <= 1, "Intensity must be between 0 and 1"
+
+        self.position = position
+        self.color = color
+        self.decay = decay
+        self.intensity = intensity
+
+
 class Model:
     vertices: np.ndarray
     texture_coords: np.ndarray
     materials: Dict[Any, Material]
     material_swaps: Dict[int, Any]
     draw_mode: int
+    light_sources: List[LightSource]
+    ka_override: Optional[float]
+    kd_override: Optional[float]
+    ks_override: Optional[float]
+    ns_override: Optional[float]
 
     offset: int
     texture_offset: int
@@ -30,6 +59,11 @@ class Model:
         materials: Dict[str, Material],
         material_swaps: Dict[int, str] = {0: "default"},
         draw_mode=gl.GL_TRIANGLES,
+        light_sources: List[LightSource] = [],
+        ka_override: Optional[float] = None,
+        kd_override: Optional[float] = None,
+        ks_override: Optional[float] = None,
+        ns_override: Optional[float] = None,
     ):
         assert len(vertices) == len(
             texture_coords
@@ -40,10 +74,16 @@ class Model:
         assert len(material_swaps) == 0 or max(material_swaps.keys()) < len(
             vertices
         ), "Material swaps must have keys less than the number of vertices"
+
+        for material in material_swaps.values():
+            if material not in materials:
+                print(material)
+
         assert all(
             [material in materials for material in material_swaps.values()]
         ), "Material swaps must have valid materials"
 
+        self.light_sources = light_sources
         self.vertices = vertices.astype(np.float32)
         self.texture_coords = texture_coords.astype(np.float32)
         self.materials = materials
@@ -51,6 +91,10 @@ class Model:
         self.draw_mode = draw_mode
         self.offset = 0
         self.texture_offset = 0
+        self.ka_override = ka_override
+        self.kd_override = kd_override
+        self.ks_override = ks_override
+        self.ns_override = ns_override
 
     @classmethod
     def load_obj(

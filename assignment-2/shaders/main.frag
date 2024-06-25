@@ -1,3 +1,4 @@
+// vi: filetype=glsl
 #version 410
 
 in vec2 tex_coord;
