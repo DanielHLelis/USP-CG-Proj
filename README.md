@@ -26,6 +26,17 @@ A 3D drawing without lighting following the Model-View-Projection pipeline.
 - D. H. Lelis - 12543822
 - Samuel Figueiredo Veronez - 12542626
 
+# Assignment 2
+
+Second graded assignment for the CG course.
+
+An extension of the assignment 1, adding the Phong illumination model.
+
+## Assignment 2- Authors
+
+- D. H. Lelis - 12543822
+- Samuel Figueiredo Veronez - 12542626
+
 ## Implementation
 
 The code was implemented in Python using OpenGL, Numpy, GLM and GLFW. To run the code install the dependencies
