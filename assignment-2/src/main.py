@@ -34,6 +34,10 @@ FRAGMENT_SHADER_FILE = local_relative_path("../shaders/phong.frag")
 def debug_camera_handler(
     camera: Camera,
 ) -> KeyHandler:
+    """
+    Produces a key handler that allows the user to print the camera position.
+    """
+
     def handler(
         win: Any,
         key: int,
@@ -49,10 +53,15 @@ def debug_camera_handler(
     return handler
 
 
-def ambient_handler(
+def light_handler(
     renderer: Renderer,
     light_sources: list[LightSource],
 ) -> KeyHandler:
+    """
+    Produces a key handler that allows the user to change the light intensity
+    for the renderer and the light sources.
+    """
+
     def handler(
         win: Any,
         key: int,
@@ -98,6 +107,30 @@ def ambient_handler(
             renderer.ambient_intensity = 1
 
     return handler
+
+
+def god_inside_animation(entity, dt):
+    """
+    Animation for the god inside the building.
+    """
+    entity.angle_y += 720 * dt * (np.random.normal(0.5) - 0.5)
+    entity.angle_z += 720 * dt * (np.random.normal(0.5) - 0.5)
+    entity.angle_x += 720 * dt * (np.random.normal(0.5) - 0.5)
+    entity.scale = glm.vec3(0.1) + glm.vec3(0.01) * (random.random() - 0.5)
+
+
+def god_outside_animation(entity, _):
+    """
+    Animation for the god outside the building.
+    """
+    time = glfw.get_time()
+    rate = 0.2
+    radius = 50
+    entity.position = glm.vec3(12, 16, 55) + glm.vec3(
+        radius * np.cos(rate * np.pi * time),
+        0,
+        radius * np.sin(rate * np.pi * time),
+    )
 
 
 def main():
@@ -260,22 +293,6 @@ def main():
         decay_coefs=np.array([1.0, 0.01, 0]),
     )
 
-    def god_inside_animation(entity, dt):
-        entity.angle_y += 720 * dt * (np.random.normal(0.5) - 0.5)
-        entity.angle_z += 720 * dt * (np.random.normal(0.5) - 0.5)
-        entity.angle_x += 720 * dt * (np.random.normal(0.5) - 0.5)
-        entity.scale = glm.vec3(0.1) + glm.vec3(0.01) * (random.random() - 0.5)
-
-    def god_outside_animation(entity, dt):
-        time = glfw.get_time()
-        rate = 0.2
-        radius = 50
-        entity.position = glm.vec3(12, 16, 55) + glm.vec3(
-            radius * np.cos(rate * np.pi * time),
-            0,
-            radius * np.sin(rate * np.pi * time),
-        )
-
     # Create entities
     entities: Dict[str, Entity] = {
         "god_outside": GlowingEntity(
@@ -392,7 +409,7 @@ def main():
             renderer.key_handler,
             camera.key_handler,
             debug_camera_handler(camera),
-            ambient_handler(renderer, [internal_source, external_source]),
+            light_handler(renderer, [internal_source, external_source]),
         ],
         cursor_handlers=[camera.cursor_handler],
     )
