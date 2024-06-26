@@ -3,11 +3,10 @@
 # D. H. Lelis - 12543822
 # Samuel Figueiredo Veronez - 12542626
 
-from typing import Optional, Iterable, Tuple, cast
+from typing import Optional, Iterable
 
 import numpy as np
 from glfw import os
-import glm
 import OpenGL.GL as gl
 from PIL import Image
 
@@ -19,20 +18,21 @@ class Material:
     shader: Shader
     texture_id: int
     texture_path: Optional[str]
-    color: glm.vec4
-    ka: np.array
-    kd: np.array
-    ks: np.array
+    ka: np.ndarray
+    kd: np.ndarray
+    ks: np.ndarray
+    ns: float
+    d: float
 
     def __init__(
         self,
         shader: Shader,
         texture_path: Optional[str] = None,
-        color: Optional[glm.vec4] = None,
-        ka: Optional[np.ndarray] = None,
-        kd: Optional[np.ndarray] = None,
-        ks: Optional[np.ndarray] = None,
-        ns: Optional[float] = 0
+        ka: np.ndarray = np.array([1.0, 1.0, 1.0]),
+        kd: np.ndarray = np.array([1.0, 1.0, 1.0]),
+        ks: np.ndarray = np.array([1.0, 1.0, 1.0]),
+        ns: float = 0,
+        d: float = 1.0,
     ):
         assert shader is not None, "Shader must be provided"
 
@@ -40,29 +40,11 @@ class Material:
         self.texture_id = 0
         self.texture_path = texture_path
 
-        if texture_path is not None:
-            self.color = glm.vec4(0.0, 0.0, 0.0, 0.0)
-        else:
-            self.color = glm.vec4(1.0, 1.0, 1.0, 1.0) if color is None else color
-
-        # Lighting coefs
-        self.ka = ka if ka is not None else np.array([1.0, 1.0, 1.0])
-        # TODO get help with kd_map
-        self.kd = kd if kd is not None else np.array([1.0, 1.0, 1.0])
-        self.ks = kd if kd is not None else np.array([1.0, 1.0, 1.0])
-        self.ns = ns if ns is not None else 0
-
-    @property
-    def texture_filter(self) -> glm.vec4:
-        if self.texture_path is None:
-            return glm.vec4(0.0, 0.0, 0.0, 0.0)
-        else:
-            return glm.vec4(
-                1.0,
-                1.0,
-                1.0,
-                1.0,
-            )
+        self.ka = ka
+        self.kd = kd
+        self.ks = ks
+        self.ns = ns
+        self.d = d
 
     @staticmethod
     def from_texture(shader: Shader, texture_path: str) -> "Material":
@@ -74,13 +56,15 @@ class Material:
 
     @staticmethod
     def load_mtllib(
-        shader: Shader, filepath: str, prefix: str = ""
+        shader: Shader,
+        filepath: str,
+        prefix: str = "",
+        overwrite_ka_with_kd: bool = False,
     ) -> dict[str, "Material"]:
         materials = load_mtllib(filepath)
         parsed_materials = {}
         for material_name, material in materials.items():
             texture_path = None
-            color = None
 
             # Check for texture
             if "map_Kd" in material:
@@ -88,20 +72,18 @@ class Material:
                     os.path.join(os.path.dirname(filepath), material["map_Kd"])
                 )
 
-            # Check for color
-            if "Kd" in material:
-                d = 1.0
-                if "d" in material:
-                    d = float(material["d"])
-                color = glm.vec4(cast(Tuple[float], material["Kd"]), d)  # type: ignore
+            kd = material["Kd"] if "Kd" in material else np.array([0.0, 0.0, 0.0])
+            ka = material["Ka"] if "Ka" in material else kd
+            ks = material["Ks"] if "Ks" in material else np.array([1.0, 1.0, 1.0])
+            d = float(material["d"]) if "d" in material else 1.0
 
-            ka = material["Ka"] if "Ka" in material else None
-            kd = material["Kd"] if "Kd" in material else None
-            ks = material["Ks"] if "Ks" in material else None
-            ns = material["Ni"] if "Ni" in material else None
+            if overwrite_ka_with_kd:
+                ka = kd
+
+            ns = material["Ni"] if "Ni" in material else 0.0
 
             parsed_materials[prefix + material_name] = Material(
-                shader, texture_path, color, ka, kd, ks, ns
+                shader, texture_path, ka, kd, ks, ns, d
             )
 
         return parsed_materials

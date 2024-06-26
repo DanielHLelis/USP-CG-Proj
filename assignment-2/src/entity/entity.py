@@ -3,7 +3,7 @@
 # D. H. Lelis - 12543822
 # Samuel Figueiredo Veronez - 12542626
 
-from typing import Optional, Callable, Any
+from typing import Optional, Callable, List, Any
 
 import OpenGL.GL as gl
 import glm
@@ -11,6 +11,8 @@ import glm
 
 from camera import Camera
 from model import Model
+
+from light_source import LightSource
 
 
 class Entity:
@@ -23,6 +25,10 @@ class Entity:
 
     visible: bool  # Whether to draw the entity or not
 
+    light_sources: List[LightSource]
+
+    ignore_lighting: bool
+
     def __init__(
         self,
         model: Model,
@@ -33,6 +39,8 @@ class Entity:
         angle_z: float = 0,  # roll
         visible: bool = True,
         draw_mode: int = gl.GL_TRIANGLES,
+        light_sources: List[LightSource] = [],
+        ignore_lighting: bool = False,
     ):
         self.model = model
         self.position = position
@@ -42,6 +50,8 @@ class Entity:
         self.angle_z = angle_z
         self.visible = visible
         self.draw_mode = draw_mode
+        self.light_sources = light_sources
+        self.ignore_lighting = ignore_lighting
 
     def update(self, dt: float, camera: Camera):
         # By default, do nothing

@@ -67,13 +67,9 @@ class Renderer:
         return np.array(projection, dtype=np.float32)
 
     def _bootstrap_lighting(self, shader: Shader, camera: Camera):
-        gl.glUniform3fv(shader.ambient_color_loc, 1, self.ambient_color)
-        gl.glUniform1f(shader.ambient_intensity_loc, self.ambient_intensity)
+        pass
 
-        gl.glUniform1i(shader.light_count_loc, 1)
-        gl.glUniform3fv(shader.view_pos_loc, 1, np.array(camera.position, dtype=np.float32))
-
-        #TODO
+        # TODO
 
     def key_handler(
         self,
@@ -116,17 +112,18 @@ class Renderer:
         gl.glUniformMatrix4fv(shader.view_loc, 1, gl.GL_TRUE, view)
         gl.glUniformMatrix4fv(shader.projection_loc, 1, gl.GL_TRUE, projection)
 
-    def draw_entity(self, entity: Entity, camera: Camera, light_sources) -> None:
+    def draw_entity(self, entity: Entity, camera: Camera) -> None:
         """Draws an entity based on it's components and the camera's attributes"""
         model = entity.model
+        light_sources = entity.light_sources
         mat = self._model_matrix(entity)
 
         # Separate the model into segments per material
         segments = list(model.material_swaps.keys()) + [len(model.vertices)]
 
-
         # Render each segment
         for i in range(len(segments) - 1):
+
             # Segment endpoints
             start = segments[i]
             end = segments[i + 1]
@@ -137,29 +134,61 @@ class Renderer:
             # Activate the right shader (does this have a big performance impact?)
             material.shader.use()
 
-            self.setup_camera(material.shader, camera)
-            self._bootstrap_lighting(material.shader, camera)
+            # Load model
+            gl.glUniformMatrix4fv(material.shader.model_loc, 1, gl.GL_TRUE, mat)
 
-            # Object Lighting properties
+            # Load view & projection
+            self.setup_camera(material.shader, camera)
+
+            # Setup camera position
+            gl.glUniform3fv(
+                material.shader.view_pos_loc,
+                1,
+                np.array(camera.position, dtype=np.float32),
+            )
+
+            # Setup ambient lights
+            gl.glUniform3fv(material.shader.ambient_color_loc, 1, self.ambient_color)
+            gl.glUniform1f(
+                material.shader.ambient_intensity_loc, self.ambient_intensity
+            )
+
+            # Setup light sources
+            gl.glUniform1i(material.shader.light_count_loc, len(light_sources))
+            for i in range(len(light_sources)):
+                gl.glUniform3fv(
+                    material.shader.light_positions_loc + i,
+                    1,
+                    np.array(light_sources[i].position),
+                )
+                gl.glUniform3fv(
+                    material.shader.light_colors_loc + i,
+                    1,
+                    np.array(light_sources[i].color),
+                )
+                gl.glUniform3fv(
+                    material.shader.light_decay_loc + i,
+                    1,
+                    np.array(light_sources[i].decay_coefs),
+                )
+                gl.glUniform1f(
+                    material.shader.light_intensities_d_loc + i,
+                    light_sources[i].intensity_d,
+                )
+                gl.glUniform1f(
+                    material.shader.light_intensities_s_loc + i,
+                    light_sources[i].intensity_s,
+                )
+
+            # Material properties
             gl.glUniform3fv(material.shader.ka_loc, 1, material.ka)
             gl.glUniform3fv(material.shader.kd_loc, 1, material.kd)
             gl.glUniform3fv(material.shader.ks_loc, 1, material.ks)
             gl.glUniform1fv(material.shader.ns_loc, 1, material.ns)
+            gl.glUniform1fv(material.shader.d_loc, 1, material.d)
 
-            gl.glUniform4fv(material.shader.color_loc, 1, np.array(material.color))
-            # TODO include normals
-
-            #TODO Encapsulate &  Multiple Lights
-            gl.glUniform1i(material.shader.light_count_loc,1)
-            gl.glUniform3fv(material.shader.light_positions_loc,1, np.array(light_sources[0].position))
-            gl.glUniform3fv(material.shader.light_colors_loc, 1, np.array(light_sources[0].color))
-            gl.glUniform3fv(material.shader.lightDecay_loc, 1, np.array(light_sources[0].decay_coefs))
-
-            gl.glUniformMatrix4fv(material.shader.model_loc, 1, gl.GL_TRUE, mat)
-            gl.glUniform4fv(material.shader.color_loc, 1, np.array(material.color))
-            gl.glUniform4fv(
-                material.shader.texture_filter_loc, 1, np.array(material.texture_filter)
-            )
+            # Ignore lighting
+            gl.glUniform1i(material.shader.ignore_lighting_loc, entity.ignore_lighting)
 
             # Set texture
             gl.glBindTexture(

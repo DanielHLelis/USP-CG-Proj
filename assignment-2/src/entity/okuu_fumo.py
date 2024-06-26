@@ -3,13 +3,14 @@
 # D. H. Lelis - 12543822
 # Samuel Figueiredo Veronez - 12542626
 
-from typing import Optional, Callable, Any
+from typing import Optional, Callable, List, Any
 
 import glm
 import glfw
 
 from model import Model
 from camera import Camera
+from light_source import LightSource
 
 from .entity import Entity
 
@@ -26,6 +27,8 @@ class OkuuFumo(Entity):
         angle_z: float = 0.0,
         rotation_speed: float = 180.0,
         handle_events: bool = True,
+        ignore_lighting: bool = False,
+        light_sources: List[LightSource] = [],
     ):
         super().__init__(
             model,
@@ -38,6 +41,8 @@ class OkuuFumo(Entity):
         self.angle_z = angle_z
         self.scale = scale
         self.handle_events = handle_events
+        self.ignore_lighting = ignore_lighting
+        self.light_sources = light_sources
 
     def update(self, dt: float, camera: Camera):
         self.angle_y += self.rotation_speed * dt

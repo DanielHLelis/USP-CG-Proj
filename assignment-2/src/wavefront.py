@@ -11,10 +11,18 @@ DEFAULT_MATERIAL = "default"
 def load_obj(filepath: str, split_objects=False):
     vertices = []
     texture_coords = []
+    normals = []
     models = []
-    current_model = {"name": "_root", "vertices": [], "texture": [], "faces": []}
+    current_model = {
+        "name": "_root",
+        "vertices": [],
+        "normals": [],
+        "texture": [],
+        "faces": [],
+    }
     vertex_offset = 0
     texture_offset = 0
+    normal_offset = 0
     material = "default"
 
     with open(filepath, "r") as file:
@@ -32,6 +40,7 @@ def load_obj(filepath: str, split_objects=False):
                     current_model["vertices"]
                     or current_model["texture"]
                     or current_model["faces"]
+                    or current_model["normals"]
                 ):
                     models.append(current_model)
 
@@ -41,15 +50,22 @@ def load_obj(filepath: str, split_objects=False):
                     "vertices": [],
                     "texture": [],
                     "faces": [],
+                    "normals": [],
                 }
                 vertex_offset += len(vertices)
                 texture_offset += len(texture_coords)
+                normal_offset += len(normals)
                 vertices = []
                 texture_coords = []
+                normals = []
 
             elif values[0] == "v":
                 vertices.append(values[1:4])
                 current_model["vertices"].append(values[1:4])
+
+            elif values[0] == "vn":
+                normals.append(values[1:4])
+                current_model["normals"].append(values[1:4])
 
             elif values[0] == "vt":
                 texture_coords.append(values[1:3])
@@ -61,6 +77,7 @@ def load_obj(filepath: str, split_objects=False):
             elif values[0] == "f":
                 face = []
                 face_texture = []
+                face_normal = []
                 for v in values[1:]:
                     w = v.split("/")
                     # Re-index vertex positions
@@ -71,10 +88,22 @@ def load_obj(filepath: str, split_objects=False):
                         face_texture.append(int(w[1]) - texture_offset)
                     else:
                         face_texture.append(0)
-                current_model["faces"].append((face, face_texture, material))
+
+                    # Re-index normals
+                    if len(w) >= 3 and w[2].isdigit():
+                        face_normal.append(int(w[2]) - normal_offset)
+
+                current_model["faces"].append(
+                    (face, face_texture, face_normal, material)
+                )
 
     # Append the last model if it has any content
-    if current_model["vertices"] or current_model["texture"] or current_model["faces"]:
+    if (
+        current_model["vertices"]
+        or current_model["texture"]
+        or current_model["faces"]
+        or current_model["normals"]
+    ):
         models.append(current_model)
 
     return models

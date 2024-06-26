@@ -6,6 +6,8 @@
 import os
 from typing import Any, Dict
 
+import random
+import numpy as np
 import glfw
 import glm
 
@@ -16,7 +18,7 @@ from light_source import LightSource
 from material import Material
 from shader import Shader
 from model import Buffers, Model
-from entity import Entity, Skybox, OkuuFumo, SelectableEntity
+from entity import Entity, Skybox, OkuuFumo, SelectableEntity, GlowingEntity
 
 
 def local_relative_path(path: str) -> str:
@@ -47,6 +49,32 @@ def debug_camera_handler(
     return handler
 
 
+def ambient_handler(
+    renderer: Renderer,
+) -> KeyHandler:
+    def handler(
+        win: Any,
+        key: int,
+        scancode: int,
+        action: int,
+        mods: int,
+    ) -> None:
+        if key == glfw.KEY_N and action == glfw.PRESS:
+            renderer.ambient_intensity -= 0.1
+            print(f"Ambient intensity: {renderer.ambient_intensity}")
+        if key == glfw.KEY_M and action == glfw.PRESS:
+            renderer.ambient_intensity += 0.1
+            print(f"Ambient intensity: {renderer.ambient_intensity}")
+
+        if renderer.ambient_intensity < 0:
+            renderer.ambient_intensity = 0
+
+        if renderer.ambient_intensity > 1:
+            renderer.ambient_intensity = 1
+
+    return handler
+
+
 def main():
 
     # Configure window
@@ -56,17 +84,10 @@ def main():
     main_shader = Shader.load_from_files(VERTEX_SHADER_FILE, FRAGMENT_SHADER_FILE)
 
     # Create the renderer
-    renderer = Renderer()
-    # TODO find a best place for ambient colors
-    renderer.ambient_color = (1.0, 1.0, 0.8, 1.0)
-    renderer.ambient_intensity = 1
-
-    # Todo LightSources
-    light_sources = [
-        LightSource(glm.vec3(2.0, 8.7, 31.7),
-                    glm.vec3(1.0, 1.0, 1.0),
-                    1.0,
-        )]
+    renderer = Renderer(
+        ambient_color=np.array([1.0, 1.0, 1.0, 1.0], dtype=np.float32),
+        ambient_intensity=0.1,
+    )
 
     # Create the camera
     camera = Camera(
@@ -78,13 +99,11 @@ def main():
     # Load all materials
     materials: Dict[str, Material] = {
         **Material.load_mtllib(
-            main_shader,
-            local_relative_path("../models/12lados.mtl"),
-            "god"
+            main_shader, local_relative_path("../models/12lados.mtl"), "god"
         ),
-        "monster-default": Material.from_texture(
-            main_shader,
-            local_relative_path("../textures/monstro.jpg"),
+        # Monstro, my beloved
+        **Material.load_mtllib(
+            main_shader, local_relative_path("../models/monstro.mtl"), "monster-"
         ),
         **Material.load_mtllib(
             main_shader, local_relative_path("../models/skybox.mtl"), "sb"
@@ -134,10 +153,7 @@ def main():
     # Load all models
     models: Dict[str, Model] = {
         **Model.load_obj(
-            local_relative_path("../models/12lados.obj"),
-            materials,
-            "god",
-            "god"
+            local_relative_path("../models/12lados.obj"), materials, "god", "god"
         ),
         # Monstro, my beloved
         **Model.load_obj(
@@ -152,24 +168,17 @@ def main():
             "sb",
             "skybox",
         ),
-        # **Model.load_obj(
-        #     local_relative_path("../models/burgerpiz/burgerpiz.obj"),
-        #     materials,
-        #     "burgerpiz-",
-        #     "burgerpiz_",
-        #     split_objects=False,  # Opted to keep the model whole due to performance impact
-        # ),
         **Model.load_obj(
             local_relative_path("../models/burgerpiz/inner.obj"),
             materials,
             "burgerpiz-inner-",
-            "burgerpiz_inner_",
+            "burgerpiz_inner",
         ),
         **Model.load_obj(
             local_relative_path("../models/burgerpiz/outer.obj"),
             materials,
             "burgerpiz-",
-            "burgerpiz_outer_",
+            "burgerpiz_outer",
         ),
         **Model.load_obj(
             local_relative_path("../models/okuu_fumo.obj"),
@@ -209,12 +218,56 @@ def main():
         ),
     }
 
+    # Create light sources
+    internal_source = LightSource(
+        position=np.array([0.0, 0.0, 0.0]),
+        color=np.array([0.6, 0.6, 1.0]),
+        intensity_d=1.0,
+        intensity_s=1.0,
+        decay_coefs=np.array([1.0, 0.01, 0.01]),
+    )
+
+    external_source = LightSource(
+        position=np.array([0.0, 0.0, 0.0]),
+        color=np.array([1.0, 1.0, 0.7]),
+        intensity_d=1.0,
+        intensity_s=1.0,
+        decay_coefs=np.array([1.0, 0.01, 0]),
+    )
+
+    def god_inside_animation(entity, dt):
+        entity.angle_y += 720 * dt * (np.random.normal(0.5) - 0.5)
+        entity.angle_z += 720 * dt * (np.random.normal(0.5) - 0.5)
+        entity.angle_x += 720 * dt * (np.random.normal(0.5) - 0.5)
+        entity.scale = glm.vec3(0.1) + glm.vec3(0.01) * (random.random() - 0.5)
+
+    def god_outside_animation(entity, dt):
+        time = glfw.get_time()
+        rate = 0.2
+        radius = 50
+        entity.position = glm.vec3(12, 16, 55) + glm.vec3(
+            radius * np.cos(rate * np.pi * time),
+            0,
+            radius * np.sin(rate * np.pi * time),
+        )
+
     # Create entities
     entities: Dict[str, Entity] = {
-        "god": Entity(
+        "god_outside": GlowingEntity(
             models["god"],
-            position=glm.vec3(2,2,2),
-            scale=glm.vec3(9),
+            position=glm.vec3(12, 10, 55),
+            scale=glm.vec3(3),
+            light_source=external_source,
+            ignore_lighting=True,
+            animator=god_outside_animation,
+        ),
+        "god_inside": GlowingEntity(
+            models["god"],
+            position=glm.vec3(3.5, 1.85, 15),
+            scale=glm.vec3(0.1),
+            light_source=internal_source,
+            ignore_lighting=True,
+            animator=god_inside_animation,
         ),
         "monster": SelectableEntity(
             glfw.KEY_1,
@@ -223,9 +276,14 @@ def main():
             position=glm.vec3(-1.5, 0, 7.6),
             scale=glm.vec3(0.5),
             log_position=True,
+            light_sources=[internal_source],
         ),
         "skybox": Skybox(models["skybox"]),
-        "okuufumo": OkuuFumo(models["okuu_fumo"], position=glm.vec3(3.5, 0.85, 15)),
+        "okuufumo": OkuuFumo(
+            models["okuu_fumo"],
+            position=glm.vec3(3.5, 0.85, 15),
+            light_sources=[internal_source],
+        ),
         "boatmobile": SelectableEntity(
             glfw.KEY_2,
             "boatmobile",
@@ -233,6 +291,7 @@ def main():
             position=glm.vec3(2, 0.4, 50),
             angle_y=-90.0,
             log_position=True,
+            light_sources=[external_source],
         ),
         "krabbypatty": SelectableEntity(
             glfw.KEY_3,
@@ -241,6 +300,7 @@ def main():
             position=glm.vec3(1.5, 6.8, 23),
             scale=glm.vec3(1.2),
             log_position=True,
+            light_sources=[external_source],
         ),
         "shion": SelectableEntity(
             glfw.KEY_4,
@@ -250,6 +310,7 @@ def main():
             scale=glm.vec3(0.1),
             angle_y=-90.0,
             log_position=True,
+            light_sources=[internal_source],
         ),
         "spongebob": SelectableEntity(
             glfw.KEY_5,
@@ -259,6 +320,7 @@ def main():
             scale=glm.vec3(1.66),
             angle_y=90,
             log_position=True,
+            light_sources=[internal_source],
         ),
         "squidward_house": SelectableEntity(
             glfw.KEY_6,
@@ -267,6 +329,7 @@ def main():
             position=glm.vec3(-11, 0, 43),
             scale=glm.vec3(1.8),
             log_position=True,
+            light_sources=[external_source],
         ),
         "okuufumo-ee": OkuuFumo(
             models["okuu_fumo"],
@@ -274,12 +337,18 @@ def main():
             rotation_speed=3600,
             scale=glm.vec3(4),
             handle_events=False,
+            ignore_lighting=True,
         ),
-        **{
-            f"map_{k}": Entity(models[k], position=glm.vec3(0, -0.02, 0))
-            for k in models.keys()
-            if k.startswith("burgerpiz_")
-        },
+        "map_internal": Entity(
+            models["burgerpiz_inner"],
+            position=glm.vec3(0, -0.02, 0),
+            light_sources=[internal_source],
+        ),
+        "map_external": Entity(
+            models["burgerpiz_outer"],
+            position=glm.vec3(0, -0.02, 0),
+            light_sources=[external_source],
+        ),
     }
 
     # Load buffers
@@ -298,6 +367,7 @@ def main():
             renderer.key_handler,
             camera.key_handler,
             debug_camera_handler(camera),
+            ambient_handler(renderer),
         ],
         cursor_handlers=[camera.cursor_handler],
     )
@@ -340,7 +410,7 @@ def main():
 
         # Render elements
         for entity in entities.values():
-            renderer.draw_entity(entity, camera, light_sources)
+            renderer.draw_entity(entity, camera)
 
         glfw.swap_buffers(win)
         last_render = current_time
