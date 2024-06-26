@@ -51,6 +51,8 @@ def debug_camera_handler(
 
 def ambient_handler(
     renderer: Renderer,
+    light_sources: list[LightSource],
+
 ) -> KeyHandler:
     def handler(
         win: Any,
@@ -66,6 +68,30 @@ def ambient_handler(
             renderer.ambient_intensity += 0.1
             print(f"Ambient intensity: {renderer.ambient_intensity}")
 
+        if key == glfw.KEY_9 and action == glfw.PRESS:
+            for light in light_sources:
+                light.intensity_d -= 0.1
+                light.intensity_d = np.clip(light.intensity_d,0,1)
+                print(f"Diffuse Intensity: {light.intensity_d}")
+
+        if key == glfw.KEY_0 and action == glfw.PRESS:
+            for light in light_sources:
+                light.intensity_d += 0.1
+                light.intensity_d = np.clip(light.intensity_d,0,1)
+                print(f"Diffuse Intensity: {light.intensity_d}")
+
+        if key == glfw.KEY_V and action == glfw.PRESS:
+            for light in light_sources:
+                light.intensity_s -= 0.1
+                light.intensity_s = np.clip(light.intensity_s,0,1)
+                print(f"Specular Intensity: {light.intensity_s}")
+
+        if key == glfw.KEY_B and action == glfw.PRESS:
+            for light in light_sources:
+                light.intensity_s += 0.1
+                light.intensity_s = np.clip(light.intensity_s,0,1)
+                print(f"Specular Intensity: {light.intensity_s}")
+
         if renderer.ambient_intensity < 0:
             renderer.ambient_intensity = 0
 
@@ -73,7 +99,6 @@ def ambient_handler(
             renderer.ambient_intensity = 1
 
     return handler
-
 
 def main():
 
@@ -367,7 +392,7 @@ def main():
             renderer.key_handler,
             camera.key_handler,
             debug_camera_handler(camera),
-            ambient_handler(renderer),
+            ambient_handler(renderer,[internal_source,external_source]),
         ],
         cursor_handlers=[camera.cursor_handler],
     )

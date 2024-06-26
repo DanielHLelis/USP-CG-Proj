@@ -31,6 +31,8 @@ class Material:
         self.shader = shader
         self.texture_id = 0
         self.texture_path = texture_path
+
+
         if texture_path is not None:
             self.color = glm.vec4(0.0, 0.0, 0.0, 0.0)
         else:
@@ -65,6 +67,7 @@ class Material:
         for material_name, material in materials.items():
             texture_path = None
             color = None
+
             # Check for texture
             if "map_Kd" in material:
                 texture_path = os.path.realpath(
@@ -76,10 +79,6 @@ class Material:
                 if "d" in material:
                     d = float(material["d"])
                 color = glm.vec4(cast(Tuple[float], material["Kd"]), d)  # type: ignore
-
-            parsed_materials[prefix + material_name] = Material(
-                shader, texture_path, color
-            )
 
         return parsed_materials
 
