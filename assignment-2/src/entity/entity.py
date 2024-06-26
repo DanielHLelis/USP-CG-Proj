@@ -1,4 +1,4 @@
-# CG 2024.1 - Assignment 1
+# CG 2024.1 - Assignment 2
 #
 # D. H. Lelis - 12543822
 # Samuel Figueiredo Veronez - 12542626
